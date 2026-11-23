@@ -105,6 +105,10 @@ O Story aparece pronto. Abaixo dele você personaliza, e a imagem é atualizada 
 O contador mostra quantos caracteres você usou. A fonte é **adaptativa**: textos curtos saem grandes; textos
 longos diminuem para caber em até cerca de quatro linhas.
 
+**MOOD (opcional, até 40 caracteres)**
+Escreva como você está se sentindo (ex.: “em paz 🌅”, “cansado, mas feliz”). O MOOD aparece no canto
+inferior esquerdo do Story, **no lugar** da frase “Janela do Mundo Real”. Deixe vazio para manter a frase.
+
 **Alinhamento**
 
 | Ícone | Opção | Resultado |
@@ -134,7 +138,7 @@ A OKENA lembra o alinhamento e o carimbo que você escolheu para os próximos St
 | Seu @ | Logo abaixo da selfie, alinhado à direita dela |
 | Comentário | Caixa translúcida na parte de baixo |
 | Data / hora | Canto inferior direito, estilo LED retrô |
-| “Janela do Mundo Real” | Canto inferior esquerdo, discreto |
+| MOOD (ou “Janela do Mundo Real”, se vazio) | Canto inferior esquerdo |
 
 Os elementos ficam afastados das bordas de cima e de baixo para não ficarem escondidos pela barra do Instagram.
 

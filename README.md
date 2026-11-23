@@ -30,6 +30,7 @@ o WhatsApp ou a galeria, com:
 - o seu **@** logo abaixo da selfie;
 - um **comentário de até 100 caracteres**, com fonte que se ajusta ao tamanho do texto e alinhamento
   **justificado, à esquerda, centralizado ou à direita**;
+- o seu **MOOD** (como você está se sentindo, até 40 caracteres) no canto inferior esquerdo;
 - **data e/ou hora** no estilo do carimbo das câmeras de filme (display de LED laranja);
 - o ícone da OKENA como marca d'água discreta.
 
@@ -62,7 +63,7 @@ Canvas API.
 2. Preencha nome completo e nome de usuário (a foto de perfil é opcional).
 3. Toque em **Abrir a janela**, permita a câmera e capture a vista.
 4. Sorria: a selfie dispara sozinha depois de 5… 4… 3… 2… 1…
-5. Escreva um comentário, escolha o alinhamento, ligue ou desligue **Data** e **Hora**.
+5. Escreva um comentário e o seu MOOD, escolha o alinhamento, ligue ou desligue **Data** e **Hora**.
 6. Toque em **Compartilhar** (Instagram, WhatsApp, Fotos…) ou **Baixar**.
 
 O passo a passo completo, com dicas e solução de problemas, está no **[Manual de uso](docs/MANUAL-DE-USO.md)**.

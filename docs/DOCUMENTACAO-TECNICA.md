@@ -100,7 +100,7 @@ Constantes: `W = 1080`, `H = 1920`, margem `M = 64`, topo seguro `SAFE_TOP = 150
 | 5 | @ do usuário | Abaixo da selfie, alinhado à direita dela, 40 px, peso 700; trunca com “…” |
 | 6 | Carimbo retrô | Display de 7 segmentos desenhado à mão, base em `H − 260`, altura 58 px, alinhado à direita |
 | 7 | Comentário | Caixa translúcida acima do carimbo, largura `W − 2M`, borda fina |
-| 8 | Assinatura | “Janela do Mundo Real”, 28 px, canto inferior esquerdo |
+| 8 | MOOD | Texto do campo MOOD (até 40 caracteres), 36 px peso 600, canto inferior esquerdo, truncado antes do carimbo. Vazio → “Janela do Mundo Real”, 28 px, 72 % de opacidade |
 
 ### Comentário: fonte adaptativa + alinhamento
 
