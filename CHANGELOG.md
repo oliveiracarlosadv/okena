@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.6.1] — 2026-11-23
+
+- Carimbo de data/hora menor (altura de 58 px → 40 px).
+
 ## [1.6.0] — 2026-11-23
 
 - Alinhamento do **MOOD**: esquerda, centro ou direita (centro/direita ganham linha própria acima do carimbo).

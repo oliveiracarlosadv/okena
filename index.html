@@ -531,7 +531,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '1.6.0';
+  const VERSION = '1.6.1';
   const KEY_PROFILE = 'okena:perfil';
   const KEY_PREFS = 'okena:prefs';
   const W = 1080, H = 1920, M = 64;           // canvas do Story e margem
@@ -1377,7 +1377,7 @@
     const moodText = $('mood').value.trim().replace(/\s+/g, ' ').slice(0, 40);
     const moodSize = moodText ? Math.round(38 * fontNow.scale) : 28;
     const stamp = stampText(state.capturedAt);
-    const stampBase = H - BOTTOM, stampH = 58;
+    const stampBase = H - BOTTOM, stampH = 40; // carimbo retrô discreto
     // MOOD à esquerda divide a linha com o carimbo; centralizado ou à direita (com carimbo ligado) ganha uma
     // linha própria logo acima do carimbo, para os dois nunca se encostarem.
     const moodAlign = state.prefs.moodAlign;

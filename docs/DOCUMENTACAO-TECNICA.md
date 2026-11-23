@@ -107,8 +107,8 @@ formato: `okena-{story|feed}-{handle}-{AAAAMMDD}-{HHMM}.png`.
 | 4 | Ícone | Logo (moldura branca + selfie âmbar) 96 px em `(M, top)`, `globalAlpha 0.5`, sem sombra (marca d'água translúcida). **Sem o nome escrito.** |
 | 5 | @ do usuário | Abaixo da selfie, alinhado à direita dela, 40 px, peso 700; trunca com “…” |
 | 5b | Localização | `profile.location` (≤ 20 caracteres): texto 32 px alinhado à direita da selfie, 50 px abaixo do @, com pin vermelho `#EF4444` (gota com furo branco, `drawPin`) à esquerda |
-| 6 | Carimbo retrô | Display de 7 segmentos desenhado à mão, base em `H − 260`, altura 58 px, alinhado à direita |
-| 7 | Comentário (posição) | A linha de base (MOOD + carimbo) sempre existe; altura = `max(carimbo 58 px, MOOD × 1,15)`. A caixa termina 40 px acima dela, com ou sem carimbo |
+| 6 | Carimbo retrô | Display de 7 segmentos desenhado à mão, base em `H − bottom`, altura 40 px, alinhado à direita |
+| 7 | Comentário (posição) | A linha de base (MOOD + carimbo) sempre existe; altura = `max(carimbo 40 px, MOOD × 1,15)`. A caixa termina 40 px acima dela, com ou sem carimbo |
 | 7b | Legenda (cor) | Sem caixa de fundo. 6 cores em `COLORS` (`prefs.color`): com contorno (`amarelo` `#FFE14D`/preto, `preto`/branco — `strokeText` com `lineWidth` = 16 % da fonte, todas as linhas antes do preenchimento) ou com sombra dupla (`branco`, `rosa` `#FF5CAA`, `ciano` `#4FE3FF`, `verde` `#B6F23A`) |
 | 7c | Comentário | Caixa translúcida acima do carimbo, largura `W − 2M`, borda fina |
 | 8a | MOOD (alinhamento) | `prefs.moodAlign` = `left` / `center` / `right`. À esquerda divide a linha com o carimbo; centralizado/à direita com carimbo ligado ganha linha própria 22 px acima do carimbo (a altura reservada da base cresce para `carimbo + 22 + MOOD × 1,15`) |
