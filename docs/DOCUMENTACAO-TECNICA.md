@@ -1,6 +1,6 @@
 # Documentação técnica — OKENA
 
-Versão 1.3.0 · Single-Page Application em um único `index.html`, sem build e sem dependências além do Tailwind via CDN.
+Versão 1.4.0 · Single-Page Application em um único `index.html`, sem build e sem dependências além do Tailwind via CDN.
 
 ---
 
@@ -32,8 +32,8 @@ Um único objeto `state` no escopo do módulo (IIFE):
 
 | Campo | Tipo | Uso |
 |---|---|---|
-| `profile` | `{ name, handle, photo }` | Perfil; `photo` é um data URL JPEG 320×320 ou `null` |
-| `prefs` | `{ date, time, align, font, format }` | Preferências do Story (persistidas) |
+| `profile` | `{ name, handle, photo, location }` | Perfil; `photo` é um data URL JPEG 320×320 ou `null` |
+| `prefs` | `{ date, time, align, font, format, mode, camBack, camFront }` | Preferências do Story (persistidas) |
 | `stream` | `MediaStream` | Stream ativo da câmera |
 | `flow` | `number` | **Token de fluxo**: incrementa a cada início/cancelamento, invalidando operações assíncronas antigas |
 | `back`, `front` | `HTMLCanvasElement` | Quadros capturados em resolução nativa |
@@ -45,8 +45,8 @@ Um único objeto `state` no escopo do módulo (IIFE):
 
 | Chave | Conteúdo |
 |---|---|
-| `okena:perfil` | `{"name": "...", "handle": "...", "photo": "data:image/jpeg;base64,..."}` |
-| `okena:prefs` | `{"date": true, "time": true, "align": "justify", "font": "padrao", "format": "story"}` |
+| `okena:perfil` | `{"name": "...", "handle": "...", "photo": "data:image/jpeg;base64,...", "location": "Belém, PA"}` |
+| `okena:prefs` | `{"date": true, "time": true, "align": "justify", "font": "padrao", "format": "story", "mode": "photo", "camBack": "", "camFront": ""}` |
 
 Leituras e gravações ficam em `try/catch`. Se o armazenamento falhar (modo privado, cota), o app segue com os
 dados em memória e avisa o usuário.
@@ -104,10 +104,12 @@ formato: `okena-{story|feed}-{handle}-{AAAAMMDD}-{HHMM}.png`.
 | 1 | Fundo | Foto traseira em *cover* (`drawCover`: escala = `max(dw/iw, dh/ih)`, recorte centralizado) |
 | 2 | Vinhetas | Gradiente preto no topo (0→640 px) e na base (últimos 760 px) para legibilidade |
 | 3 | Selfie 3:4 | 342 × 456 px em `(W − M − 342, 150)`, raio 40, sombra (blur 50, offset 18), borda branca 5 px |
-| 4 | Ícone | Logo (moldura branca + selfie âmbar) 96 px em `(M, 150)`. **Sem o nome escrito.** |
+| 4 | Ícone | Logo (moldura branca + selfie âmbar) 96 px em `(M, top)`, `globalAlpha 0.5`, sem sombra (marca d'água translúcida). **Sem o nome escrito.** |
 | 5 | @ do usuário | Abaixo da selfie, alinhado à direita dela, 40 px, peso 700; trunca com “…” |
+| 5b | Localização | `profile.location` (≤ 20 caracteres): texto 32 px alinhado à direita da selfie, 50 px abaixo do @, com pin vermelho `#EF4444` (gota com furo branco, `drawPin`) à esquerda |
 | 6 | Carimbo retrô | Display de 7 segmentos desenhado à mão, base em `H − 260`, altura 58 px, alinhado à direita |
-| 7 | Comentário | Caixa translúcida acima do carimbo, largura `W − 2M`, borda fina |
+| 7 | Comentário (posição) | A linha de base (MOOD + carimbo) sempre existe; altura = `max(carimbo 58 px, MOOD × 1,15)`. A caixa termina 40 px acima dela, com ou sem carimbo |
+| 7b | Comentário | Caixa translúcida acima do carimbo, largura `W − 2M`, borda fina |
 | 8 | MOOD | Texto do campo MOOD (até 40 caracteres), 36 px peso 600, canto inferior esquerdo, truncado antes do carimbo. Vazio → “Janela do Mundo Real”, 28 px, 72 % de opacidade |
 
 ### Comentário: fonte adaptativa + alinhamento
@@ -195,7 +197,15 @@ Como a geração leva o tempo do vídeo, o navegador perde a "ativação do usu�
 Por isso o resultado aparece numa janela (**Vídeo pronto!**) com novos botões Compartilhar/Salvar. Nome:
 `okena-{story|feed}-{handle}-{AAAAMMDD}-{HHMM}.mp4`.
 
-## 4.2 Atualização automática
+## 4.2 Escolha de câmeras
+
+`prefs.camBack` / `prefs.camFront` guardam o `deviceId` escolhido (vazio = automática por `facingMode`). A lista
+vem de `enumerateDevices()` (rótulos disponíveis depois da permissão de câmera). `openCamera` usa
+`deviceId: { exact }`; se a câmera não existir mais (`OverconstrainedError`/`NotFoundError`/`NotReadableError`),
+limpa a preferência e repete com `facingMode`. Trocar a câmera da vista reabre o stream na hora; a da selfie vale
+na etapa 2.
+
+## 4.3 Atualização automática
 
 - `sw.js` busca **HTML e arquivos do próprio app sempre da rede** (`cache: 'no-store'`). O cache só serve
   offline. Tailwind e Google Fonts continuam cache-first.

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.0] — 2026-11-23
+
+- **Localização estática** (até 20 caracteres, digitada; sem GPS): nas Configurações e na câmera, antes de
+  fotografar. No Story aparece abaixo do @ com um pin vermelho pequeno.
+- **Escolher câmeras:** lente da vista e da selfie (principal, ultra-angular, tele, frontal, externa).
+- Correção: o MOOD não se sobrepõe mais à caixa de comentário quando data e hora estão desligadas.
+- Ícone do Story translúcido (marca d'água).
+
 ## [1.3.0] — 2026-11-23
 
 - **Vídeos de até 30 segundos** com som: modo Foto/Vídeo na câmera, cronômetro e anel de progresso, selfie em

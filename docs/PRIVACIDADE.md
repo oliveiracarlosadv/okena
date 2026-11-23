@@ -10,7 +10,7 @@ A OKENA foi feita para que **nada saia do seu aparelho** sem a sua ação.
 |---|---|---|
 | Câmera traseira e frontal | Somente na memória do navegador, durante a captura | Tirar a foto da vista e a selfie |
 | Microfone (só no modo Vídeo) | Somente na memória do navegador, durante a gravação | Som do vídeo |
-| Nome completo, nome de usuário, foto de perfil | `localStorage` deste navegador | Saudação e identificação no Story |
+| Nome completo, nome de usuário, foto de perfil, localização digitada | `localStorage` deste navegador | Saudação e identificação no Story |
 | Preferências (data, hora, alinhamento) | `localStorage` deste navegador | Lembrar suas escolhas |
 
 ## O que a OKENA **não** faz
@@ -18,6 +18,7 @@ A OKENA foi feita para que **nada saia do seu aparelho** sem a sua ação.
 - Não envia fotos, nomes ou qualquer dado para servidores. Não existe servidor da OKENA.
 - Não usa cookies, analytics, pixels de rastreamento ou anúncios.
 - Não pede login, e-mail ou telefone.
+- Não usa o GPS nem a localização do aparelho: o local do Story é só o texto que você digita.
 - Não grava áudio fora do modo Vídeo, e só enquanto você está gravando.
 - Não guarda as fotos: a câmera é desligada assim que a selfie é tirada, e o Story só fica salvo se você
   baixar ou compartilhar.

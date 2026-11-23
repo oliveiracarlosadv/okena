@@ -133,6 +133,18 @@
         </div>
         <span class="mt-1.5 block text-xs text-neutral-500">Letras, números, ponto e sublinhado.</span>
       </label>
+      <label class="block mt-5">
+        <span class="flex items-center justify-between text-sm font-medium text-neutral-300">
+          <span>Localização <span class="text-neutral-500 font-normal">(opcional)</span></span>
+          <span id="inLocationCount" class="tabular-nums text-neutral-500 font-normal">0/20</span>
+        </span>
+        <div class="mt-2 flex items-center gap-2 rounded-2xl bg-neutral-900 border border-neutral-800 focus-within:border-amber-300 pl-4">
+          <svg class="h-4 w-4 text-red-500 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
+          <input id="inLocation" type="text" maxlength="20" autocomplete="off" placeholder="Ex.: Belém, PA"
+            class="w-full bg-transparent pr-4 py-3.5 text-base outline-none placeholder:text-neutral-600">
+        </div>
+        <span class="mt-1.5 block text-xs text-neutral-500">Até 20 caracteres. Aparece com um pin vermelho no Story. Você digita; o GPS do aparelho não é usado. Dá para trocar também na hora de fotografar.</span>
+      </label>
 
       <p id="formError" class="mt-4 text-sm text-red-400" hidden></p>
 
@@ -172,6 +184,7 @@
       </div>
 
       <h1 class="mt-10 text-3xl font-bold tracking-tight text-center">Olá, <span id="homeName"></span>.</h1>
+      <p id="homeLoc" class="mt-2 flex items-center gap-1 text-sm text-neutral-300" hidden><svg class="h-4 w-4 text-red-500 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span id="homeLocText"></span></p>
       <p class="mt-2 text-neutral-400 text-center">Primeiro a vista, depois você.<br>A selfie dispara sozinha em 5 segundos.</p>
 
       <button id="startBtn" class="mt-8 w-full rounded-2xl bg-white text-black font-semibold py-4 text-lg active:scale-[.98] transition flex items-center justify-center gap-2">
@@ -212,7 +225,9 @@
         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
       <span id="stepPill" class="rounded-full bg-black/40 backdrop-blur px-4 py-2 text-sm font-semibold"></span>
-      <span class="h-11 w-11"></span>
+      <button id="camBtn" class="grid place-items-center h-11 w-11 rounded-full bg-black/40 backdrop-blur" aria-label="Escolher câmeras">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a2 2 0 0 1 2-2h1.5l1.2-1.8A2 2 0 0 1 10.4 3.3h3.2a2 2 0 0 1 1.7.9L16.5 6H18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M9 12.5a3 3 0 0 1 5.2-2M15 12.5a3 3 0 0 1-5.2 2M14.5 8.5v2h-2M9.5 16.5v-2h2"/></svg>
+      </button>
     </div>
 
     <div id="recTimer" class="absolute left-1/2 -translate-x-1/2 top-24 rounded-full bg-red-600 px-4 py-1.5 text-sm font-bold tabular-nums flex items-center gap-2" hidden>
@@ -224,6 +239,10 @@
     </div>
 
     <div class="absolute inset-x-0 bottom-0 pb-safe px-6 pt-16 bg-gradient-to-t from-black/70 to-transparent">
+      <button id="locBtn" class="mx-auto mb-3 flex items-center gap-1.5 rounded-full bg-black/50 backdrop-blur px-3.5 py-1.5 text-sm font-medium max-w-[85vw]">
+        <svg class="h-4 w-4 text-red-500 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span id="locBtnText" class="truncate">Adicionar local</span>
+        <svg class="h-3.5 w-3.5 opacity-60 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg>
+      </button>
       <p id="camHint" class="text-center text-sm text-neutral-200 mb-4"></p>
       <div id="modeSwitch" class="mx-auto mb-4 w-max grid grid-cols-2 gap-1 rounded-full bg-black/50 backdrop-blur p-1 text-sm font-semibold" role="group" aria-label="Modo de captura">
         <button data-mode="photo" class="mode-btn rounded-full px-5 py-1.5" aria-pressed="true">Foto</button>
@@ -339,6 +358,43 @@
     <p class="mt-1 text-center text-sm text-neutral-400">e escolha <strong class="text-white">“Adicionar às Fotos”</strong> (iPhone) ou <strong class="text-white">“Baixar imagem”</strong> (Android).</p>
     <img id="saveImg" alt="Story para salvar" class="mt-5 max-h-[68dvh] w-auto max-w-full rounded-2xl border border-neutral-800" style="-webkit-touch-callout: default; user-select: auto;">
     <button id="saveClose" class="mt-6 w-full max-w-sm rounded-2xl bg-white text-black font-semibold py-3.5">Pronto</button>
+  </div>
+
+  <!-- ============ ESCOLHER CÂMERAS ============ -->
+  <div id="camSheet" class="fixed inset-0 z-50 bg-black/80 flex items-end sm:items-center justify-center" hidden>
+    <div class="w-full sm:max-w-sm rounded-t-[2rem] sm:rounded-3xl bg-neutral-900 border border-neutral-800 px-6 pt-5 pb-safe sm:pb-6">
+      <p class="text-lg font-semibold">Escolher câmeras</p>
+      <p class="mt-1 text-sm text-neutral-400">Use a lente que quiser em cada etapa: principal, ultra-angular, teleobjetiva, frontal ou uma câmera externa.</p>
+      <label class="block mt-5">
+        <span class="text-sm font-medium text-neutral-300">1 · Câmera da vista</span>
+        <select id="camBackSel" class="mt-2 w-full rounded-2xl bg-black/40 border border-neutral-800 px-4 py-3.5 text-base outline-none focus:border-amber-300"></select>
+      </label>
+      <label class="block mt-4">
+        <span class="text-sm font-medium text-neutral-300">2 · Câmera da selfie</span>
+        <select id="camFrontSel" class="mt-2 w-full rounded-2xl bg-black/40 border border-neutral-800 px-4 py-3.5 text-base outline-none focus:border-amber-300"></select>
+      </label>
+      <p id="camNote" class="mt-3 text-xs text-neutral-500"></p>
+      <button id="camApply" class="mt-5 w-full rounded-2xl bg-white text-black font-semibold py-3.5">Usar estas câmeras</button>
+      <button id="camCancel" class="mt-2 w-full rounded-2xl bg-neutral-800 text-neutral-200 font-medium py-3">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- ============ LOCALIZAÇÃO ============ -->
+  <div id="locSheet" class="fixed inset-0 z-50 bg-black/80 flex items-end sm:items-center justify-center" hidden>
+    <form id="locForm" class="w-full sm:max-w-sm rounded-t-[2rem] sm:rounded-3xl bg-neutral-900 border border-neutral-800 px-6 pt-5 pb-safe sm:pb-6">
+      <p class="flex items-center gap-2 text-lg font-semibold"><svg class="h-5 w-5 text-red-500 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg> Onde você está?</p>
+      <p class="mt-1 text-sm text-neutral-400">Digite o local (até 20 caracteres). Não usamos o GPS.</p>
+      <div class="mt-4 flex items-center rounded-2xl bg-black/40 border border-neutral-800 focus-within:border-amber-300">
+        <input id="locInput" type="text" maxlength="20" autocomplete="off" enterkeyhint="done" placeholder="Ex.: Belém, PA"
+          class="w-full bg-transparent px-4 py-3.5 text-base outline-none placeholder:text-neutral-600">
+        <span id="locCount" class="pr-4 text-xs tabular-nums text-neutral-500">0/20</span>
+      </div>
+      <button type="submit" class="mt-4 w-full rounded-2xl bg-white text-black font-semibold py-3.5">Usar este local</button>
+      <div class="mt-2 grid grid-cols-2 gap-2">
+        <button type="button" id="locClear" class="rounded-2xl bg-neutral-800 text-neutral-200 font-medium py-3">Sem local</button>
+        <button type="button" id="locCancel" class="rounded-2xl bg-neutral-800 text-neutral-200 font-medium py-3">Cancelar</button>
+      </div>
+    </form>
   </div>
 
   <!-- ============ GERAR / SALVAR VÍDEO ============ -->
@@ -460,7 +516,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '1.3.0';
+  const VERSION = '1.4.0';
   const KEY_PROFILE = 'okena:perfil';
   const KEY_PREFS = 'okena:prefs';
   const W = 1080, H = 1920, M = 64;           // canvas do Story e margem
@@ -503,7 +559,7 @@
   const vibrate = (p) => { try { navigator.vibrate && navigator.vibrate(p); } catch (_) {} };
 
   const state = {
-    screen: null, profile: null, prefs: { date: true, time: true, align: 'justify', font: 'padrao', format: 'story', mode: 'photo' }, mode: 'photo', clip: null, videoOut: null, overlay: null, recorder: null,
+    screen: null, profile: null, prefs: { date: true, time: true, align: 'justify', font: 'padrao', format: 'story', mode: 'photo', camBack: '', camFront: '' }, mode: 'photo', clip: null, videoOut: null, overlay: null, recorder: null,
     stream: null, flow: 0, step: 0,
     back: null, front: null, capturedAt: null,
     blob: null, url: null, fileName: 'okena.png',
@@ -535,6 +591,7 @@
   }
 
   /* ---------------- perfil ---------------- */
+  const normalizeLocation = (v) => (v || '').trim().replace(/\s+/g, ' ').slice(0, 20);
   const normalizeHandle = (v) => v.trim().replace(/^@+/, '').replace(/\s+/g, '').toLowerCase();
   const initials = (name) => name.trim().split(/\s+/).filter(Boolean).map((w) => w[0]).filter((c, i, a) => i === 0 || i === a.length - 1).join('').toUpperCase();
 
@@ -546,6 +603,9 @@
     $('homeAvatar').textContent = initials(p.name);
     $('mockHandle').textContent = '@' + p.handle;
     $('homeAvatarImg').hidden = !p.photo;
+    const loc = p.location || '';
+    $('homeLoc').hidden = !loc; $('homeLocText').textContent = loc;
+    $('locBtnText').textContent = loc || 'Adicionar local';
     if (p.photo) $('homeAvatarImg').src = p.photo;
   }
 
@@ -595,6 +655,8 @@
     $('saveProfile').textContent = editing ? 'Salvar' : 'Começar';
     $('inName').value = editing && state.profile ? state.profile.name : '';
     $('inHandle').value = editing && state.profile ? state.profile.handle : '';
+    $('inLocation').value = editing && state.profile ? state.profile.location || '' : '';
+    $('inLocationCount').textContent = `${$('inLocation').value.length}/20`;
     $('cancelEdit').hidden = !editing;
     $('resetProfile').hidden = !editing;
     $('formError').hidden = true;
@@ -608,7 +670,7 @@
     const err = $('formError');
     if (name.length < 2) { err.textContent = 'Informe seu nome completo.'; err.hidden = false; return; }
     if (!/^[a-z0-9._]{1,30}$/.test(handle)) { err.textContent = 'O @ aceita apenas letras, números, ponto e sublinhado (até 30).'; err.hidden = false; return; }
-    state.profile = { name, handle, photo: state.draftPhoto || null };
+    state.profile = { name, handle, photo: state.draftPhoto || null, location: normalizeLocation($('inLocation').value) };
     if (!writeJSON(KEY_PROFILE, state.profile)) toast('Modo privado: o perfil vale só nesta sessão');
     else toast(state.editing ? 'Configurações salvas' : 'Bem-vindo(a) à OKENA');
     renderProfile();
@@ -616,6 +678,7 @@
     else show('home');
   });
   $('inHandle').addEventListener('input', (e) => { const v = e.target.value; if (v.startsWith('@')) e.target.value = v.replace(/^@+/, ''); });
+  $('inLocation').addEventListener('input', (e) => { $('inLocationCount').textContent = `${e.target.value.length}/20`; });
   $('cancelEdit').addEventListener('click', () => show(state.returnTo === 'preview' && state.back ? 'preview' : 'home'));
   $('resetProfile').addEventListener('click', () => {
     if (!confirm('Apagar nome e @ salvos neste aparelho?')) return;
@@ -626,6 +689,64 @@
   });
   $('homeProfileBtn').addEventListener('click', () => openSetup(true, 'home'));
   $('previewProfileBtn').addEventListener('click', () => openSetup(true, 'preview'));
+
+  /* ---------------- escolher câmeras (por aparelho: principal, ultra-angular, tele, frontal, externa) ---------------- */
+  async function openCamSheet() {
+    if (state.recorder || state.step !== 1) return;
+    let cams = [];
+    try { cams = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === 'videoinput'); } catch (_) {}
+    const fill = (sel, autoLabel, current) => {
+      sel.innerHTML = '';
+      const o = document.createElement('option'); o.value = ''; o.textContent = autoLabel; sel.appendChild(o);
+      cams.forEach((d, i) => {
+        const op = document.createElement('option');
+        op.value = d.deviceId; op.textContent = d.label || `Câmera ${i + 1}`;
+        sel.appendChild(op);
+      });
+      sel.value = cams.some((d) => d.deviceId === current) ? current : '';
+    };
+    fill($('camBackSel'), 'Automática (traseira)', state.prefs.camBack);
+    fill($('camFrontSel'), 'Automática (frontal)', state.prefs.camFront);
+    $('camNote').textContent = cams.length
+      ? `${cams.length} câmera${cams.length > 1 ? 's' : ''} encontrada${cams.length > 1 ? 's' : ''} neste aparelho. A escolha fica salva.`
+      : 'Este navegador não informou a lista de câmeras. A OKENA usa a traseira e a frontal automaticamente.';
+    $('camSheet').hidden = false;
+  }
+  $('camBtn').addEventListener('click', openCamSheet);
+  $('camCancel').addEventListener('click', () => { $('camSheet').hidden = true; });
+  $('camApply').addEventListener('click', async () => {
+    const back = $('camBackSel').value, front = $('camFrontSel').value;
+    const backChanged = back !== state.prefs.camBack;
+    state.prefs.camBack = back; state.prefs.camFront = front;
+    writeJSON(KEY_PREFS, state.prefs);
+    $('camSheet').hidden = true;
+    if (backChanged && state.step === 1 && state.screen === 'camera') await reopenBack(state.mode === 'video');
+    toast('Câmeras atualizadas');
+  });
+
+  /* ---------------- localização estática (digitada, sem GPS) ---------------- */
+  function openLocSheet() {
+    if (state.recorder) return;
+    const i = $('locInput');
+    i.value = (state.profile && state.profile.location) || '';
+    $('locCount').textContent = `${i.value.length}/20`;
+    $('locSheet').hidden = false;
+    setTimeout(() => i.focus(), 50);
+  }
+  function setLocation(loc) {
+    if (!state.profile) return;
+    state.profile = { ...state.profile, location: normalizeLocation(loc) };
+    writeJSON(KEY_PROFILE, state.profile);
+    renderProfile();
+    $('locSheet').hidden = true;
+    toast(state.profile.location ? `Local: ${state.profile.location}` : 'Story sem local');
+    if (state.screen === 'preview') render();
+  }
+  $('locBtn').addEventListener('click', openLocSheet);
+  $('locInput').addEventListener('input', (e) => { $('locCount').textContent = `${e.target.value.length}/20`; });
+  $('locForm').addEventListener('submit', (e) => { e.preventDefault(); setLocation($('locInput').value); });
+  $('locClear').addEventListener('click', () => setLocation(''));
+  $('locCancel').addEventListener('click', () => { $('locSheet').hidden = true; });
 
   /* ---------------- câmera ---------------- */
   function camError(name, message) { const e = new Error(message || name); e.name = name; return e; }
@@ -640,11 +761,21 @@
     if (DEMO) return demoStream(facing === 'user' ? 'front' : 'back');
     if (!window.isSecureContext) throw camError('InsecureContext');
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw camError('Unsupported');
-    const video = { facingMode: { ideal: facing }, width: { ideal: 1920 }, height: { ideal: 1080 } };
+    const role = facing === 'user' ? 'camFront' : 'camBack';
+    const chosen = state.prefs[role];
+    const video = chosen
+      ? { deviceId: { exact: chosen }, width: { ideal: 1920 }, height: { ideal: 1080 } }
+      : { facingMode: { ideal: facing }, width: { ideal: 1920 }, height: { ideal: 1080 } };
     const get = (v, a) => navigator.mediaDevices.getUserMedia({ audio: a, video: v });
     try {
       return await get(video, !!withAudio);
     } catch (e) {
+      if (chosen && (e.name === 'OverconstrainedError' || e.name === 'NotFoundError' || e.name === 'NotReadableError')) {
+        // a câmera escolhida sumiu (ex.: câmera externa desconectada): volta para a automática
+        state.prefs[role] = ''; writeJSON(KEY_PREFS, state.prefs);
+        toast('A câmera escolhida não está disponível — usando a automática');
+        return openCamera(facing, withAudio);
+      }
       if (e.name === 'OverconstrainedError' || e.name === 'ConstraintNotSatisfiedError') return get(true, !!withAudio);
       if (withAudio && (e.name === 'NotAllowedError' || e.name === 'NotFoundError' || e.name === 'NotReadableError')) {
         const s = await get(video, false); // microfone negado/ausente: grava sem som
@@ -777,6 +908,8 @@
     $('shutter').hidden = !back;
     $('shutter').disabled = true;
     $('modeSwitch').hidden = !back || !videoSupported;
+    $('locBtn').hidden = !back;
+    $('camBtn').hidden = !back;
     $('countdown').hidden = true;
     $('recTimer').hidden = true;
     $('recRing').hidden = true;
@@ -862,7 +995,7 @@
       if (token !== state.flow) return;
       $('recTimer').hidden = true; $('recRing').hidden = true;
       $('shutterDot').classList.remove('rec');
-      if (secs < 1 || !chunks.length) { toast('Vídeo muito curto — grave pelo menos 1 segundo'); $('shutter').disabled = false; $('modeSwitch').hidden = false; syncModeUI(); return; }
+      if (secs < 1 || !chunks.length) { toast('Vídeo muito curto — grave pelo menos 1 segundo'); $('shutter').disabled = false; $('modeSwitch').hidden = false; $('locBtn').hidden = false; $('camBtn').hidden = false; syncModeUI(); return; }
       const type = rec.mimeType || mime || 'video/webm';
       const blob = new Blob(chunks, { type });
       state.clip = { blob, url: URL.createObjectURL(blob), mime: type, duration: secs, hasAudio };
@@ -875,6 +1008,8 @@
     rec.start(250);
     vibrate(30);
     $('modeSwitch').hidden = true;
+    $('locBtn').hidden = true;
+    $('camBtn').hidden = true;
     $('shutterDot').classList.add('rec');
     $('shutter').setAttribute('aria-label', 'Parar gravação');
     $('camHint').textContent = 'Toque de novo para parar';
@@ -990,15 +1125,31 @@
   }
 
   function drawLogo(x, left, top, size) {
-    // ícone: janela (moldura branca) + selfie âmbar
+    // ícone translúcido (marca d'água): janela (moldura branca) + selfie âmbar, ~50 % de opacidade, sem sombra
     const lw = size * 0.11;
     x.save();
-    x.shadowColor = 'rgba(0,0,0,.45)'; x.shadowBlur = 20;
+    x.globalAlpha = 0.5;
     rr(x, left + lw / 2, top + lw / 2, size - lw, size - lw, size * 0.27);
     x.lineWidth = lw; x.strokeStyle = '#fff'; x.stroke();
-    x.shadowBlur = 0;
     rr(x, left + size * 0.475, top + size * 0.2, size * 0.32, size * 0.43, size * 0.09);
     x.fillStyle = AMBER; x.fill();
+    x.restore();
+  }
+
+  /* pin de localização vermelho (gota com furo branco) */
+  function drawPin(x, cx, cy, h) {
+    const r = h * 0.36, top = cy - h / 2 + r, tip = cy + h / 2;
+    x.save();
+    x.shadowColor = 'rgba(0,0,0,.5)'; x.shadowBlur = 8; x.shadowOffsetY = 2;
+    x.beginPath();
+    x.moveTo(cx, tip);
+    x.bezierCurveTo(cx - r * 0.55, tip - h * 0.22, cx - r, top + r * 0.75, cx - r, top);
+    x.arc(cx, top, r, Math.PI, 0);
+    x.bezierCurveTo(cx + r, top + r * 0.75, cx + r * 0.55, tip - h * 0.22, cx, tip);
+    x.closePath();
+    x.fillStyle = '#EF4444'; x.fill();
+    x.shadowColor = 'transparent';
+    x.beginPath(); x.arc(cx, top, r * 0.42, 0, Math.PI * 2); x.fillStyle = '#fff'; x.fill();
     x.restore();
   }
 
@@ -1146,15 +1297,36 @@
     x.fillText(fit(x, '@' + state.profile.handle, right - M), right, rowY);
     x.restore();
 
+    // 4b) localização estática: pin vermelho pequeno + texto, logo abaixo do @
+    const loc = normalizeLocation(state.profile.location);
+    if (loc) {
+      x.save();
+      x.font = `600 32px ${FONT}`;
+      x.textAlign = 'right'; x.textBaseline = 'middle';
+      x.shadowColor = 'rgba(0,0,0,.6)'; x.shadowBlur = 14;
+      const ly = rowY + 50, pinH = 34;
+      const txt = fit(x, loc, right - M - pinH);
+      const tw = x.measureText(txt).width;
+      x.fillStyle = 'rgba(255,255,255,.95)';
+      x.fillText(txt, right, ly + 1);
+      x.restore();
+      drawPin(x, right - tw - 10 - pinH * 0.36, ly, pinH);
+    }
+
     // 4) carimbo retrô (data/hora) no canto inferior direito
+    // Linha de base (MOOD/slogan à esquerda + carimbo à direita). Ela SEMPRE existe, então a caixa de
+    // comentário é posicionada acima dela com folga — nunca se sobrepõem, com ou sem carimbo.
+    const fontNow = currentFont();
+    const moodText = $('mood').value.trim().replace(/\s+/g, ' ').slice(0, 40);
+    const moodSize = moodText ? Math.round(38 * fontNow.scale) : 28;
     const stamp = stampText(state.capturedAt);
     const stampBase = H - BOTTOM, stampH = 58;
-    let bottomLimit = H - BOTTOM + 8;
+    const rowH = Math.max(stamp ? stampH : 0, Math.round(moodSize * 1.15));
+    const bottomLimit = stampBase - rowH - 40;
     let stampLeft = W - M;
-    if (stamp) { stampLeft = drawRetro(x, stamp, W - M, stampBase, stampH).left; bottomLimit = stampBase - stampH - 40; }
+    if (stamp) stampLeft = drawRetro(x, stamp, W - M, stampBase, stampH).left;
 
     // 5) caixa de comentário (até 100 caracteres, alinhamento escolhido, fonte adaptativa)
-    const fontNow = currentFont();
     const text = $('comment').value.trim().replace(/\s+/g, ' ').slice(0, 100);
     if (text) {
       const bw = W - M * 2, px = 44, py = 36;
@@ -1173,14 +1345,14 @@
     }
 
     // 6) MOOD (como o usuário está se sentindo) — ou o slogan, se vazio
-    const mood = $('mood').value.trim().replace(/\s+/g, ' ').slice(0, 40);
+    const mood = moodText;
     x.save();
     x.shadowColor = 'rgba(0,0,0,.55)'; x.shadowBlur = 12;
     x.textBaseline = 'alphabetic';
-    const moodY = stamp ? stampBase - 4 : H - BOTTOM + 8;
+    const moodY = stampBase - 4;
     const moodMax = (stamp ? stampLeft - 40 : W - M) - M;
     if (mood) {
-      x.font = fontCSS(fontNow, Math.round(38 * fontNow.scale));
+      x.font = fontCSS(fontNow, moodSize);
       x.fillStyle = '#fff';
       x.fillText(fit(x, mood, moodMax), M, moodY);
     } else {
@@ -1504,7 +1676,8 @@
   ['aboutSheet', 'installSheet'].forEach((id) => $(id).querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => closeSheet(id))));
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { closeSheet('aboutSheet'); closeSheet('installSheet'); }
-    if ((e.key === ' ' || e.key === 'Enter') && state.screen === 'camera' && !$('shutter').hidden) { e.preventDefault(); onShutter(); }
+    const typing = /^(INPUT|TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || '') || !$('locSheet').hidden || !$('camSheet').hidden;
+    if (!typing && (e.key === ' ' || e.key === 'Enter') && state.screen === 'camera' && !$('shutter').hidden) { e.preventDefault(); onShutter(); }
   });
   $('aboutBtn').addEventListener('click', () => openSheet('aboutSheet'));
 
@@ -1572,7 +1745,7 @@
   // início
   $('appVersion').textContent = VERSION;
   const prefs = readJSON(KEY_PREFS);
-  if (prefs && typeof prefs === 'object') state.prefs = { date: prefs.date !== false, time: prefs.time !== false, align: ['justify', 'left', 'center', 'right'].includes(prefs.align) ? prefs.align : 'justify', font: FONTS.some((f) => f.id === prefs.font) ? prefs.font : 'padrao', format: prefs.format === 'feed' ? 'feed' : 'story', mode: prefs.mode === 'video' ? 'video' : 'photo' };
+  if (prefs && typeof prefs === 'object') state.prefs = { date: prefs.date !== false, time: prefs.time !== false, align: ['justify', 'left', 'center', 'right'].includes(prefs.align) ? prefs.align : 'justify', font: FONTS.some((f) => f.id === prefs.font) ? prefs.font : 'padrao', format: prefs.format === 'feed' ? 'feed' : 'story', mode: prefs.mode === 'video' ? 'video' : 'photo', camBack: typeof prefs.camBack === 'string' ? prefs.camBack : '', camFront: typeof prefs.camFront === 'string' ? prefs.camFront : '' };
   buildFontPicker();
   syncChips();
   state.profile = loadProfile();

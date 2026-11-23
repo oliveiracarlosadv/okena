@@ -42,6 +42,7 @@ Na primeira vez, a OKENA pede três informações:
 | **Foto de perfil** | Não | Identifica você dentro do app (tela inicial e configurações). Não vai para o Story. É recortada em quadrado automaticamente. |
 | **Nome completo** | Sim | Usado na saudação da tela inicial. |
 | **Nome de usuário** | Sim | Seu @. Aceita letras, números, ponto e sublinhado (até 30). Não precisa digitar o “@”. |
+| **Localização** | Não | Onde você está, digitado por você (até 20 caracteres, ex.: “Belém, PA”). Aparece no Story com um pin vermelho, abaixo do @. O GPS do aparelho **não** é usado. |
 
 Toque em **Começar**. Os dados ficam salvos **só neste aparelho e neste navegador** (no `localStorage`), então
 você não precisa preencher de novo.
@@ -68,6 +69,17 @@ você não precisa preencher de novo.
 2. Na primeira vez, o navegador pergunta se a OKENA pode usar a câmera. Toque em **Permitir**.
 3. A **câmera traseira** abre em tela cheia. O selo **1/2 · A vista** confirma a etapa.
 4. Enquadre o que você está vendo e toque no **botão branco** central.
+
+**📍 Trocar o local:** acima do botão de captura aparece a pílula com o seu local (ou “Adicionar local”).
+Toque nela, digite onde você está (até 20 caracteres) e toque em **Usar este local**; ou **Sem local** para
+tirar o pin. O novo local fica salvo para as próximas vezes.
+
+**Escolher câmeras:** o botão de câmera no canto superior direito abre a lista de câmeras do aparelho. Escolha
+qual faz a **vista** (ex.: “Câmera Ultra-angular Traseira”, “Câmera Teleobjetiva Traseira”, uma webcam externa)
+e qual faz a **selfie**. “Automática” usa a traseira e a frontal padrão. A escolha fica salva; se a câmera sumir
+(por exemplo, uma externa desconectada), a OKENA volta para a automática.
+
+<p align="center"><img src="screenshots/17-local.png" width="230" alt="Trocar o local"> &nbsp; <img src="screenshots/18-cameras.png" width="230" alt="Escolher câmeras"></p>
 
 Dicas:
 
@@ -180,12 +192,13 @@ A OKENA lembra a fonte, o alinhamento e o carimbo que você escolheu para os pr�
 | Elemento | Posição |
 |---|---|
 | Foto da vista | Fundo inteiro, em modo “preencher” |
-| Ícone da OKENA | Canto superior esquerdo |
+| Ícone da OKENA | Canto superior esquerdo, translúcido |
 | Selfie 3:4 | Canto superior direito, cantos arredondados, borda branca e sombra |
 | Seu @ | Logo abaixo da selfie, alinhado à direita dela |
+| 📍 Localização | Abaixo do @, com pin vermelho pequeno |
 | Comentário | Caixa translúcida na parte de baixo |
 | Data / hora | Canto inferior direito, estilo LED retrô |
-| MOOD (ou “Janela do Mundo Real”, se vazio) | Canto inferior esquerdo |
+| MOOD (ou “Janela do Mundo Real”, se vazio) | Canto inferior esquerdo, sempre abaixo da caixa de comentário (nunca se sobrepõem) |
 
 Os elementos ficam afastados das bordas de cima e de baixo para não ficarem escondidos pela barra do Instagram.
 
