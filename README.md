@@ -42,7 +42,7 @@ A imagem fica pronta para o Instagram, o WhatsApp ou a galeria, com:
   amarelo com borda preta, preto com borda branca, rosa, ciano e verde-limão), com fonte que se ajusta ao
   tamanho do texto e alinhamento **justificado, à esquerda, centralizado ou à direita**;
 - **10 fontes** para o comentário e o MOOD (Padrão, Elegante, Clássica, Máquina, Mono, Caneta, Pacifico, Pôster, Marcador e Retrô);
-- o seu **MOOD** (como você está se sentindo, até 40 caracteres) no canto inferior esquerdo;
+- o seu **MOOD** (como você está se sentindo, até 40 caracteres) embaixo, **à esquerda, centralizado ou à direita**;
 - **data e/ou hora** no estilo do carimbo das câmeras de filme (display de LED laranja);
 - o ícone da OKENA como marca d'água translúcida.
 
@@ -58,6 +58,10 @@ teleobjetiva, externa…) e qual faz a selfie.
 <div align="center">
   <img src="docs/screenshots/feed-exemplo.png" width="340" alt="Exemplo no formato Feed 4:5 retrato">
   <br><sub>Formato Feed (4:5, retrato)</sub>
+</div>
+
+<div align="center">
+  <img src="docs/screenshots/mood-alinhamento.png" width="760" alt="Alinhamento do MOOD">
 </div>
 
 <div align="center">

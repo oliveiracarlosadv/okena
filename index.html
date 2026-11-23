@@ -315,7 +315,12 @@
         </label>
         <input id="mood" type="text" maxlength="40" placeholder="Ex.: grato, cansado, em paz ☕" enterkeyhint="done"
           class="mt-2 w-full rounded-2xl bg-black/40 border border-neutral-800 px-3.5 py-3 text-base outline-none focus:border-amber-300 placeholder:text-neutral-600">
-        <p class="mt-1.5 text-xs text-neutral-500">Aparece no canto inferior esquerdo, no lugar de “Janela do Mundo Real”.</p>
+        <div class="mt-2 grid grid-cols-3 gap-1.5" role="group" aria-label="Alinhamento do MOOD">
+          <button data-moodalign="left" class="chip flex items-center justify-center gap-1.5 rounded-xl border border-neutral-700 h-9 text-xs font-medium" aria-pressed="false" aria-label="MOOD à esquerda" title="MOOD à esquerda"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 10h10M4 14h16M4 18h10"/></svg>Esquerda</button>
+          <button data-moodalign="center" class="chip flex items-center justify-center gap-1.5 rounded-xl border border-neutral-700 h-9 text-xs font-medium" aria-pressed="false" aria-label="MOOD centralizado" title="MOOD centralizado"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M7 10h10M4 14h16M7 18h10"/></svg>Centro</button>
+          <button data-moodalign="right" class="chip flex items-center justify-center gap-1.5 rounded-xl border border-neutral-700 h-9 text-xs font-medium" aria-pressed="false" aria-label="MOOD à direita" title="MOOD à direita"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M10 10h10M4 14h16M10 18h10"/></svg>Direita</button>
+        </div>
+        <p class="mt-1.5 text-xs text-neutral-500">Aparece embaixo, no lugar de “Janela do Mundo Real”. Centralizado ou à direita, fica numa linha acima do carimbo.</p>
         <p class="mt-4 text-sm text-neutral-400">Fonte do comentário e do MOOD:</p>
         <div id="fontPicker" class="mt-2 -mx-1 px-1 pb-1 flex gap-2 overflow-x-auto snap-x" role="group" aria-label="Fontes"></div>
         <p class="mt-4 text-sm text-neutral-400">Cor da legenda:</p>
@@ -328,7 +333,7 @@
           <button data-color="verde" class="color-btn grid place-items-center h-12 rounded-2xl border border-neutral-700 bg-neutral-800" aria-pressed="false" aria-label="Verde-limão" title="Verde-limão"><span class="text-2xl font-black leading-none" style="color:#B6F23A;text-shadow:0 1px 4px rgba(0,0,0,.8);">Aa</span></button>
         </div>
         <div class="mt-4 flex items-center gap-2">
-          <span class="text-sm text-neutral-400 mr-1 shrink-0">Alinhamento:</span>
+          <span class="text-sm text-neutral-400 mr-1 shrink-0">Alinhar legenda:</span>
           <div class="grid grid-cols-4 gap-1.5 flex-1">
             <button data-align="justify" class="chip grid place-items-center rounded-xl border border-neutral-700 h-9" aria-pressed="false" aria-label="Justificado" title="Justificado"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg></button>
             <button data-align="left" class="chip grid place-items-center rounded-xl border border-neutral-700 h-9" aria-pressed="false" aria-label="Alinhar à esquerda" title="Alinhar à esquerda"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 10h10M4 14h16M4 18h10"/></svg></button>
@@ -526,7 +531,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '1.5.0';
+  const VERSION = '1.6.0';
   const KEY_PROFILE = 'okena:perfil';
   const KEY_PREFS = 'okena:prefs';
   const W = 1080, H = 1920, M = 64;           // canvas do Story e margem
@@ -579,7 +584,7 @@
   const vibrate = (p) => { try { navigator.vibrate && navigator.vibrate(p); } catch (_) {} };
 
   const state = {
-    screen: null, profile: null, prefs: { date: true, time: true, align: 'justify', font: 'padrao', format: 'story', mode: 'photo', camBack: '', camFront: '', color: 'branco' }, mode: 'photo', clip: null, videoOut: null, overlay: null, recorder: null,
+    screen: null, profile: null, prefs: { date: true, time: true, align: 'justify', font: 'padrao', format: 'story', mode: 'photo', camBack: '', camFront: '', color: 'branco', moodAlign: 'left' }, mode: 'photo', clip: null, videoOut: null, overlay: null, recorder: null,
     stream: null, flow: 0, step: 0,
     back: null, front: null, capturedAt: null,
     blob: null, url: null, fileName: 'okena.png',
@@ -1373,7 +1378,12 @@
     const moodSize = moodText ? Math.round(38 * fontNow.scale) : 28;
     const stamp = stampText(state.capturedAt);
     const stampBase = H - BOTTOM, stampH = 58;
-    const rowH = Math.max(stamp ? stampH : 0, Math.round(moodSize * 1.15));
+    // MOOD à esquerda divide a linha com o carimbo; centralizado ou à direita (com carimbo ligado) ganha uma
+    // linha própria logo acima do carimbo, para os dois nunca se encostarem.
+    const moodAlign = state.prefs.moodAlign;
+    const moodOwnLine = !!stamp && moodAlign !== 'left';
+    const moodLineH = Math.round(moodSize * 1.15);
+    const rowH = moodOwnLine ? stampH + 22 + moodLineH : Math.max(stamp ? stampH : 0, moodLineH);
     const bottomLimit = stampBase - rowH - 40;
     let stampLeft = W - M;
     if (stamp) stampLeft = drawRetro(x, stamp, W - M, stampBase, stampH).left;
@@ -1410,16 +1420,18 @@
     x.save();
     x.shadowColor = 'rgba(0,0,0,.55)'; x.shadowBlur = 12;
     x.textBaseline = 'alphabetic';
-    const moodY = stampBase - 4;
-    const moodMax = (stamp ? stampLeft - 40 : W - M) - M;
+    const moodY = moodOwnLine ? stampBase - stampH - 22 : stampBase - 4;
+    const moodMax = moodOwnLine || !stamp ? W - 2 * M : stampLeft - 40 - M;
+    x.textAlign = moodAlign;
+    const moodX = moodAlign === 'center' ? W / 2 : moodAlign === 'right' ? W - M : M;
     if (mood) {
       x.font = fontCSS(fontNow, moodSize);
       x.fillStyle = '#fff';
-      x.fillText(fit(x, mood, moodMax), M, moodY);
+      x.fillText(fit(x, mood, moodMax), moodX, moodY);
     } else {
       x.font = `500 28px ${FONT}`;
       x.fillStyle = 'rgba(255,255,255,.72)';
-      x.fillText('Janela do Mundo Real', M, moodY);
+      x.fillText('Janela do Mundo Real', moodX, moodY);
     }
     x.restore();
 
@@ -1629,7 +1641,14 @@
     document.querySelectorAll('[data-font]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.font === state.prefs.font)));
     document.querySelectorAll('[data-format]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.format === state.prefs.format)));
     document.querySelectorAll('[data-color]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.color === state.prefs.color)));
+    document.querySelectorAll('[data-moodalign]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.moodalign === state.prefs.moodAlign)));
   }
+  document.querySelectorAll('[data-moodalign]').forEach((b) => b.addEventListener('click', () => {
+    state.prefs.moodAlign = b.dataset.moodalign;
+    writeJSON(KEY_PREFS, state.prefs);
+    syncChips();
+    render();
+  }));
   document.querySelectorAll('[data-color]').forEach((b) => b.addEventListener('click', () => {
     state.prefs.color = b.dataset.color;
     writeJSON(KEY_PREFS, state.prefs);
@@ -1813,7 +1832,7 @@
   // início
   $('appVersion').textContent = VERSION;
   const prefs = readJSON(KEY_PREFS);
-  if (prefs && typeof prefs === 'object') state.prefs = { date: prefs.date !== false, time: prefs.time !== false, align: ['justify', 'left', 'center', 'right'].includes(prefs.align) ? prefs.align : 'justify', font: FONTS.some((f) => f.id === prefs.font) ? prefs.font : 'padrao', format: prefs.format === 'feed' ? 'feed' : 'story', mode: prefs.mode === 'video' ? 'video' : 'photo', camBack: typeof prefs.camBack === 'string' ? prefs.camBack : '', camFront: typeof prefs.camFront === 'string' ? prefs.camFront : '', color: COLORS.some((c) => c.id === prefs.color) ? prefs.color : 'branco' };
+  if (prefs && typeof prefs === 'object') state.prefs = { date: prefs.date !== false, time: prefs.time !== false, align: ['justify', 'left', 'center', 'right'].includes(prefs.align) ? prefs.align : 'justify', font: FONTS.some((f) => f.id === prefs.font) ? prefs.font : 'padrao', format: prefs.format === 'feed' ? 'feed' : 'story', mode: prefs.mode === 'video' ? 'video' : 'photo', camBack: typeof prefs.camBack === 'string' ? prefs.camBack : '', camFront: typeof prefs.camFront === 'string' ? prefs.camFront : '', color: COLORS.some((c) => c.id === prefs.color) ? prefs.color : 'branco', moodAlign: ['left', 'center', 'right'].includes(prefs.moodAlign) ? prefs.moodAlign : 'left' };
   buildFontPicker();
   syncChips();
   state.profile = loadProfile();

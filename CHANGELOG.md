@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.6.0] — 2026-11-23
+
+- Alinhamento do **MOOD**: esquerda, centro ou direita (centro/direita ganham linha própria acima do carimbo).
+- Rótulo “Alinhar legenda” para diferenciar do alinhamento do MOOD.
+
 ## [1.5.0] — 2026-11-23
 
 - Legenda sem caixa preta de fundo: só o texto, em **6 cores** (branco, amarelo com borda preta, preto com borda

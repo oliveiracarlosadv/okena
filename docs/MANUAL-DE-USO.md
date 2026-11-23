@@ -148,7 +148,13 @@ longos diminuem para caber em até cerca de quatro linhas.
 
 **MOOD (opcional, até 40 caracteres)**
 Escreva como você está se sentindo (ex.: “em paz 🌅”, “cansado, mas feliz”). O MOOD aparece no canto
-inferior esquerdo do Story, **no lugar** da frase “Janela do Mundo Real”. Deixe vazio para manter a frase.
+inferior do Story, **no lugar** da frase “Janela do Mundo Real”. Deixe vazio para manter a frase.
+
+Logo abaixo do campo, escolha o alinhamento do MOOD: **Esquerda** (divide a linha com o carimbo de data),
+**Centro** ou **Direita**. Centralizado ou à direita, com o carimbo ligado, o MOOD sobe para uma linha própria,
+logo acima do carimbo, para os dois nunca se encostarem.
+
+<p align="center"><img src="screenshots/mood-alinhamento.png" width="700" alt="Alinhamento do MOOD"></p>
 
 **Fonte (10 opções)**
 Deslize a fileira de fontes e toque na que quiser. Ela vale para o comentário **e** para o MOOD.
@@ -196,7 +202,7 @@ As fontes são baixadas da internet na primeira vez que você as usa. Sem conex�
 Ligue ou desligue **Data** e **Hora**. Elas aparecem no canto inferior direito, em laranja, no estilo do
 carimbo das câmeras de filme (ex.: `23 11 '26  14:32`). Com os dois desligados, o carimbo some.
 
-A OKENA lembra a fonte, a cor, o alinhamento e o carimbo que você escolheu para os próximos Stories.
+A OKENA lembra a fonte, a cor, os alinhamentos (legenda e MOOD) e o carimbo que você escolheu para os próximos Stories.
 
 <br clear="right">
 
@@ -213,7 +219,7 @@ A OKENA lembra a fonte, a cor, o alinhamento e o carimbo que você escolheu para
 | 📍 Localização | Abaixo do @, com pin vermelho pequeno |
 | Legenda | Parte de baixo, só o texto (sem caixa), na cor escolhida |
 | Data / hora | Canto inferior direito, estilo LED retrô |
-| MOOD (ou “Janela do Mundo Real”, se vazio) | Canto inferior esquerdo, sempre abaixo da caixa de comentário (nunca se sobrepõem) |
+| MOOD (ou “Janela do Mundo Real”, se vazio) | Embaixo, à esquerda, no centro ou à direita, sempre abaixo da legenda (nunca se sobrepõem) |
 
 Os elementos ficam afastados das bordas de cima e de baixo para não ficarem escondidos pela barra do Instagram.
 
