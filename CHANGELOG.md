@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2.0] — 2026-11-23
+
+- Escolha do formato na hora de postar: **Story** (9:16, 1080 × 1920) ou **Feed** (4:5, 1080 × 1350), sempre em retrato.
+- Feed com margens próprias e selfie proporcional; nome do arquivo indica o formato.
+
 ## [1.1.0] — 2026-11-23
 
 - 10 fontes para o comentário e o MOOD: Padrão, Elegante, Clássica, Máquina, Mono, Caneta, Pacifico, Pôster, Marcador e Retrô.

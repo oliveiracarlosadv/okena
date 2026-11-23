@@ -24,8 +24,12 @@
 
 **OKENA** (do tupi *okena*, “janela”) é um gerador de Stories de câmera dupla que roda inteiro no navegador.
 Você fotografa a vista com a câmera traseira; a OKENA vira para a câmera frontal e, depois de uma contagem de
-5 segundos, dispara a selfie sozinha. O resultado é um Story vertical **1080 × 1920** pronto para o Instagram,
-o WhatsApp ou a galeria, com:
+5 segundos, dispara a selfie sozinha. Na hora de postar você escolhe o formato:
+
+- **Story** — 1080 × 1920 (9:16);
+- **Feed** — 1080 × 1350 (4:5), sempre em **retrato**, o maior formato vertical aceito no feed do Instagram.
+
+A imagem fica pronta para o Instagram, o WhatsApp ou a galeria, com:
 
 - a vista em tela cheia;
 - a selfie em moldura **3:4** no canto superior direito, com borda branca e sombra;
@@ -41,6 +45,11 @@ o WhatsApp ou a galeria, com:
   <img src="docs/screenshots/story-exemplo.png" width="260" alt="Story de exemplo: comentário justificado, data e hora">
   &nbsp;&nbsp;
   <img src="docs/screenshots/story-centralizado-so-hora.png" width="260" alt="Story de exemplo: comentário centralizado, só a hora">
+</div>
+
+<div align="center">
+  <img src="docs/screenshots/feed-exemplo.png" width="340" alt="Exemplo no formato Feed 4:5 retrato">
+  <br><sub>Formato Feed (4:5, retrato)</sub>
 </div>
 
 <div align="center">
@@ -64,9 +73,9 @@ Canvas API.
 |:-:|:-:|:-:|:-:|
 | <img src="docs/screenshots/09-fontes.png" width="190"> | <img src="docs/screenshots/10-salvar-galeria.png" width="190"> | <img src="docs/screenshots/01-cadastro.png" width="190"> | <img src="docs/screenshots/06-configuracoes.png" width="190"> |
 
-| Sobre | Instalar no dispositivo |
-|:-:|:-:|
-| <img src="docs/screenshots/07-sobre.png" width="190"> | <img src="docs/screenshots/08-instalar.png" width="190"> |
+| Feed 4:5 | Sobre | Instalar no dispositivo |
+|:-:|:-:|:-:|
+| <img src="docs/screenshots/11-feed.png" width="190"> | <img src="docs/screenshots/07-sobre.png" width="190"> | <img src="docs/screenshots/08-instalar.png" width="190"> |
 
 ## Como usar (resumo)
 
@@ -74,7 +83,7 @@ Canvas API.
 2. Preencha nome completo e nome de usuário (a foto de perfil é opcional).
 3. Toque em **Abrir a janela**, permita a câmera e capture a vista.
 4. Sorria: a selfie dispara sozinha depois de 5… 4… 3… 2… 1…
-5. Escreva um comentário e o seu MOOD, escolha a fonte e o alinhamento, ligue ou desligue **Data** e **Hora**.
+5. Escolha **Story** ou **Feed**, escreva um comentário e o seu MOOD, escolha a fonte e o alinhamento, ligue ou desligue **Data** e **Hora**.
 6. Toque em **Compartilhar** (Instagram, WhatsApp…) ou **Salvar foto** (vai para a galeria/Fotos).
 
 O passo a passo completo, com dicas e solução de problemas, está no **[Manual de uso](docs/MANUAL-DE-USO.md)**.
@@ -97,7 +106,7 @@ O próprio app tem um botão **Instalar no dispositivo** com esse guia.
 | Interface | HTML5 + [Tailwind CSS](https://tailwindcss.com) (CDN) |
 | Lógica | JavaScript puro, sem frameworks nem build |
 | Câmera | `navigator.mediaDevices.getUserMedia` (`environment` → `user`) |
-| Composição | Canvas 2D, 1080 × 1920, PNG |
+| Composição | Canvas 2D, PNG — Story 1080 × 1920 ou Feed 1080 × 1350 |
 | Exportação | Web Share API (`navigator.share` com arquivo) com fallback para download |
 | Dados | `localStorage` (perfil e preferências) |
 | Offline | Service Worker + Web App Manifest |

@@ -1,5 +1,5 @@
 /* OKENA — service worker: funciona offline após a primeira visita. */
-const CACHE = 'okena-v1.1.0';
+const CACHE = 'okena-v1.2.0';
 const CORE = [
   './', './index.html', './manifest.webmanifest',
   './assets/logo.svg', './assets/logo-mark.svg', './assets/logo-wordmark.svg', './assets/favicon.svg',

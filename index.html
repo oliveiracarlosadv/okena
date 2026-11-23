@@ -237,6 +237,16 @@
     </header>
 
     <main class="flex-1 w-full max-w-md mx-auto px-5 py-4 flex flex-col items-center">
+      <div class="w-full mb-4 grid grid-cols-2 gap-1.5 rounded-2xl bg-neutral-900 border border-neutral-800 p-1.5" role="group" aria-label="Formato da postagem">
+        <button data-format="story" class="chip rounded-xl py-2.5 flex items-center justify-center gap-2 font-semibold" aria-pressed="true">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/></svg>
+          Story <span class="text-xs font-medium opacity-70">9:16</span>
+        </button>
+        <button data-format="feed" class="chip rounded-xl py-2.5 flex items-center justify-center gap-2 font-semibold" aria-pressed="false">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="17.5" rx="2.5"/></svg>
+          Feed <span class="text-xs font-medium opacity-70">4:5 retrato</span>
+        </button>
+      </div>
       <div class="relative">
         <img id="storyImg" alt="Story gerado pela OKENA" class="max-h-[58dvh] w-auto max-w-full rounded-3xl border border-neutral-800 shadow-2xl shadow-black">
         <div id="rendering" class="absolute inset-0 grid place-items-center rounded-3xl bg-black/50" hidden>
@@ -400,11 +410,10 @@
 (() => {
   'use strict';
 
-  const VERSION = '1.1.0';
+  const VERSION = '1.2.0';
   const KEY_PROFILE = 'okena:perfil';
   const KEY_PREFS = 'okena:prefs';
   const W = 1080, H = 1920, M = 64;           // canvas do Story e margem
-  const SAFE_TOP = 150;                       // área livre do cabeçalho do Instagram
   const FONT = '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif';
   const AMBER = '#FFC94D';
 
@@ -421,6 +430,12 @@
     { id: 'marker',    name: 'Marcador', family: '"Permanent Marker", cursive', weight: 400, scale: 0.96, lh: 1.35 },
     { id: 'righteous', name: 'Retrô',    family: '"Righteous", sans-serif',     weight: 400, scale: 1,    lh: 1.28 },
   ];
+  /* formatos de saída — ambos em retrato */
+  const FORMATS = [
+    { id: 'story', name: 'Story', ratio: '9:16', h: 1920, top: 150, bottom: 260, selfie: 342, commentMax: 360 }, // margens livres da interface do Instagram
+    { id: 'feed',  name: 'Feed',  ratio: '4:5',  h: 1350, top: 64,  bottom: 72,  selfie: 300, commentMax: 260 }, // retrato do feed: 1080×1350
+  ];
+  const currentFormat = () => FORMATS.find((f) => f.id === state.prefs.format) || FORMATS[0];
   const fontCSS = (f, px) => `${f.weight} ${Math.round(px)}px ${f.family}`;
   const currentFont = () => FONTS.find((f) => f.id === state.prefs.font) || FONTS[0];
   const loadedFonts = new Set(['padrao']);
@@ -438,7 +453,7 @@
   const vibrate = (p) => { try { navigator.vibrate && navigator.vibrate(p); } catch (_) {} };
 
   const state = {
-    screen: null, profile: null, prefs: { date: true, time: true, align: 'justify', font: 'padrao' },
+    screen: null, profile: null, prefs: { date: true, time: true, align: 'justify', font: 'padrao', format: 'story' },
     stream: null, flow: 0, step: 0,
     back: null, front: null, capturedAt: null,
     blob: null, url: null, fileName: 'okena.png',
@@ -879,6 +894,8 @@
   }
 
   function compose() {
+    const F = currentFormat();
+    const H = F.h, SAFE_TOP = F.top, BOTTOM = F.bottom; // Story 1080×1920 ou Feed 1080×1350 (sempre retrato)
     const c = document.createElement('canvas');
     c.width = W; c.height = H;
     const x = c.getContext('2d');
@@ -889,22 +906,23 @@
     drawCover(x, state.back, 0, 0, W, H);
 
     // vinhetas para legibilidade
-    let g = x.createLinearGradient(0, 0, 0, 640);
+    const vt = Math.round(H / 3), vb = Math.round(H * 0.4);
+    let g = x.createLinearGradient(0, 0, 0, vt);
     g.addColorStop(0, 'rgba(0,0,0,.6)'); g.addColorStop(0.6, 'rgba(0,0,0,.18)'); g.addColorStop(1, 'rgba(0,0,0,0)');
-    x.fillStyle = g; x.fillRect(0, 0, W, 640);
-    g = x.createLinearGradient(0, H - 760, 0, H);
+    x.fillStyle = g; x.fillRect(0, 0, W, vt);
+    g = x.createLinearGradient(0, H - vb, 0, H);
     g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.62)');
-    x.fillStyle = g; x.fillRect(0, H - 760, W, 760);
+    x.fillStyle = g; x.fillRect(0, H - vb, W, vb);
 
     // 2) selfie 3:4 no canto superior direito
-    const sw = 342, sh = 456, sx = W - M - sw, sy = SAFE_TOP, r = 40;
+    const sw = F.selfie, sh = Math.round(F.selfie * 4 / 3), sx = W - M - sw, sy = SAFE_TOP, r = 40;
     x.save(); x.shadowColor = 'rgba(0,0,0,.55)'; x.shadowBlur = 50; x.shadowOffsetY = 18;
     rr(x, sx, sy, sw, sh, r); x.fillStyle = '#111'; x.fill(); x.restore();
     x.save(); rr(x, sx, sy, sw, sh, r); x.clip(); drawCover(x, state.front, sx, sy, sw, sh); x.restore();
     x.save(); rr(x, sx, sy, sw, sh, r); x.lineWidth = 5; x.strokeStyle = 'rgba(255,255,255,.95)'; x.stroke(); x.restore();
 
     // 3) marca d'água: somente o ícone
-    drawLogo(x, M, SAFE_TOP, 96);
+    drawLogo(x, M, SAFE_TOP, F.id === 'feed' ? 84 : 96);
 
     // 4) @ do usuário (com foto de perfil) logo abaixo da foto 3:4, alinhado à direita dela
     x.save();
@@ -920,8 +938,8 @@
 
     // 4) carimbo retrô (data/hora) no canto inferior direito
     const stamp = stampText(state.capturedAt);
-    const stampBase = H - 260, stampH = 58;
-    let bottomLimit = H - 260 + 8;
+    const stampBase = H - BOTTOM, stampH = 58;
+    let bottomLimit = H - BOTTOM + 8;
     let stampLeft = W - M;
     if (stamp) { stampLeft = drawRetro(x, stamp, W - M, stampBase, stampH).left; bottomLimit = stampBase - stampH - 40; }
 
@@ -930,7 +948,7 @@
     const text = $('comment').value.trim().replace(/\s+/g, ' ').slice(0, 100);
     if (text) {
       const bw = W - M * 2, px = 44, py = 36;
-      const L = layoutComment(x, text, bw - px * 2, 360, fontNow);
+      const L = layoutComment(x, text, bw - px * 2, F.commentMax, fontNow);
       const bh = L.lines.length * L.lh + py * 2;
       const by = bottomLimit - bh;
       x.save();
@@ -949,7 +967,7 @@
     x.save();
     x.shadowColor = 'rgba(0,0,0,.55)'; x.shadowBlur = 12;
     x.textBaseline = 'alphabetic';
-    const moodY = stamp ? stampBase - 4 : H - 252;
+    const moodY = stamp ? stampBase - 4 : H - BOTTOM + 8;
     const moodMax = (stamp ? stampLeft - 40 : W - M) - M;
     if (mood) {
       x.font = fontCSS(fontNow, Math.round(38 * fontNow.scale));
@@ -981,7 +999,7 @@
     state.url = URL.createObjectURL(blob);
     $('storyImg').src = state.url;
     const d = state.capturedAt;
-    state.fileName = `okena-${state.profile.handle}-${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}-${pad2(d.getHours())}${pad2(d.getMinutes())}.png`;
+    state.fileName = `okena-${currentFormat().id}-${state.profile.handle}-${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}-${pad2(d.getHours())}${pad2(d.getMinutes())}.png`;
     $('rendering').hidden = true;
   }
 
@@ -999,7 +1017,15 @@
     $('chipTime').setAttribute('aria-pressed', String(state.prefs.time));
     document.querySelectorAll('[data-align]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.align === state.prefs.align)));
     document.querySelectorAll('[data-font]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.font === state.prefs.font)));
+    document.querySelectorAll('[data-format]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.format === state.prefs.format)));
   }
+  document.querySelectorAll('[data-format]').forEach((b) => b.addEventListener('click', () => {
+    if (state.prefs.format === b.dataset.format) return;
+    state.prefs.format = b.dataset.format;
+    writeJSON(KEY_PREFS, state.prefs);
+    syncChips();
+    render();
+  }));
   function buildFontPicker() {
     const box = $('fontPicker');
     box.innerHTML = '';
@@ -1151,7 +1177,7 @@
   // início
   $('appVersion').textContent = VERSION;
   const prefs = readJSON(KEY_PREFS);
-  if (prefs && typeof prefs === 'object') state.prefs = { date: prefs.date !== false, time: prefs.time !== false, align: ['justify', 'left', 'center', 'right'].includes(prefs.align) ? prefs.align : 'justify', font: FONTS.some((f) => f.id === prefs.font) ? prefs.font : 'padrao' };
+  if (prefs && typeof prefs === 'object') state.prefs = { date: prefs.date !== false, time: prefs.time !== false, align: ['justify', 'left', 'center', 'right'].includes(prefs.align) ? prefs.align : 'justify', font: FONTS.some((f) => f.id === prefs.font) ? prefs.font : 'padrao', format: prefs.format === 'feed' ? 'feed' : 'story' };
   buildFontPicker();
   syncChips();
   state.profile = loadProfile();

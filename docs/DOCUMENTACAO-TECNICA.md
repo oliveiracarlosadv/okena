@@ -1,6 +1,6 @@
 # Documentação técnica — OKENA
 
-Versão 1.1.0 · Single-Page Application em um único `index.html`, sem build e sem dependências além do Tailwind via CDN.
+Versão 1.2.0 · Single-Page Application em um único `index.html`, sem build e sem dependências além do Tailwind via CDN.
 
 ---
 
@@ -33,7 +33,7 @@ Um único objeto `state` no escopo do módulo (IIFE):
 | Campo | Tipo | Uso |
 |---|---|---|
 | `profile` | `{ name, handle, photo }` | Perfil; `photo` é um data URL JPEG 320×320 ou `null` |
-| `prefs` | `{ date, time, align, font }` | Preferências do Story (persistidas) |
+| `prefs` | `{ date, time, align, font, format }` | Preferências do Story (persistidas) |
 | `stream` | `MediaStream` | Stream ativo da câmera |
 | `flow` | `number` | **Token de fluxo**: incrementa a cada início/cancelamento, invalidando operações assíncronas antigas |
 | `back`, `front` | `HTMLCanvasElement` | Quadros capturados em resolução nativa |
@@ -46,7 +46,7 @@ Um único objeto `state` no escopo do módulo (IIFE):
 | Chave | Conteúdo |
 |---|---|
 | `okena:perfil` | `{"name": "...", "handle": "...", "photo": "data:image/jpeg;base64,..."}` |
-| `okena:prefs` | `{"date": true, "time": true, "align": "justify", "font": "padrao"}` |
+| `okena:prefs` | `{"date": true, "time": true, "align": "justify", "font": "padrao", "format": "story"}` |
 
 Leituras e gravações ficam em `try/catch`. Se o armazenamento falhar (modo privado, cota), o app segue com os
 dados em memória e avisa o usuário.
@@ -87,9 +87,17 @@ para.
 | `NotReadableError`, `TrackStartError`, `AbortError` | Câmera ocupada |
 | `TimeoutError` (sintético) | A câmera não respondeu |
 
-## 4. Composição do Story (Canvas 1080 × 1920)
+## 4. Composição (Canvas — Story ou Feed)
 
-Constantes: `W = 1080`, `H = 1920`, margem `M = 64`, topo seguro `SAFE_TOP = 150` (fora da barra do Instagram).
+Formatos em `FORMATS`, ambos em **retrato**, escolhidos em `prefs.format`:
+
+| id | Tamanho | Topo (`top`) | Base (`bottom`) | Selfie | Altura máx. do comentário |
+|---|---|---|---|---|---|
+| `story` | 1080 × 1920 (9:16) | 150 px (fora da barra do Instagram) | 260 px | 342 × 456 | 360 px |
+| `feed` | 1080 × 1350 (4:5) | 64 px | 72 px | 300 × 400 | 260 px |
+
+Margem lateral `M = 64`. As vinhetas usam 1/3 da altura no topo e 40 % na base. O nome do arquivo leva o
+formato: `okena-{story|feed}-{handle}-{AAAAMMDD}-{HHMM}.png`.
 
 | Ordem | Camada | Detalhes |
 |---|---|---|

@@ -101,6 +101,19 @@ ao que você vê na tela.
 
 O Story aparece pronto. Abaixo dele você personaliza, e a imagem é atualizada na hora:
 
+**Formato: Story ou Feed**
+No topo da tela há dois botões:
+
+| Botão | Tamanho | Para quê |
+|---|---|---|
+| **Story** (9:16) | 1080 × 1920 | Stories do Instagram, status do WhatsApp |
+| **Feed** (4:5 retrato) | 1080 × 1350 | Post no feed do Instagram. Sempre na vertical (retrato), o maior espaço que o feed permite |
+
+Os dois usam a mesma foto, comentário, MOOD, fonte e carimbo; só muda o enquadramento. No Feed as margens são
+menores, porque o feed não tem a barra do Instagram por cima da imagem. A OKENA lembra o último formato escolhido.
+
+<p align="center"><img src="screenshots/11-feed.png" width="260" alt="Formato Feed 4:5 retrato"></p>
+
 **Comentário (opcional, até 100 caracteres)**
 O contador mostra quantos caracteres você usou. A fonte é **adaptativa**: textos curtos saem grandes; textos
 longos diminuem para caber em até cerca de quatro linhas.
@@ -168,7 +181,8 @@ Os elementos ficam afastados das bordas de cima e de baixo para não ficarem esc
 
 - **Compartilhar:** abre a folha de compartilhamento do sistema com o PNG. Escolha **Instagram** (Stories),
   **WhatsApp** etc.
-- **Salvar foto:** guarda o Story (`okena-usuario-AAAAMMDD-HHMM.png`, 1080 × 1920) na galeria.
+- **Salvar foto:** guarda a imagem na galeria (`okena-story-usuario-AAAAMMDD-HHMM.png`, 1080 × 1920, ou
+  `okena-feed-usuario-…png`, 1080 × 1350).
   - **iPhone/iPad:** abre a folha de compartilhamento; toque em **Salvar Imagem** e a foto vai para o app **Fotos**.
     Se a folha não abrir, a OKENA mostra o Story em tela cheia: **toque e segure a imagem › Adicionar às Fotos**.
   - **Android:** a imagem é salva na pasta **Download** e aparece na **Galeria** / **Google Fotos**
