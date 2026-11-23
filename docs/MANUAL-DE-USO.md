@@ -66,7 +66,9 @@ você não precisa preencher de novo.
 <img src="screenshots/03-camera-vista.png" width="260" align="right">
 
 1. Toque em **Abrir a janela**.
-2. Na primeira vez, o navegador pergunta se a OKENA pode usar a câmera. Toque em **Permitir**.
+2. Na primeira vez, o navegador pergunta se a OKENA pode usar a câmera. Toque em **Permitir**. O pedido
+   aparece **uma vez só**; ele volta apenas se você limpar os dados do navegador ou revogar a permissão.
+   No iPhone, para o Safari nunca mais perguntar: toque em **aA › Ajustes do Site › Câmera › Permitir**.
 3. A **câmera traseira** abre em tela cheia. O selo **1/2 · A vista** confirma a etapa.
 4. Enquadre o que você está vendo e toque no **botão branco** central.
 
@@ -140,8 +142,8 @@ menores, porque o feed não tem a barra do Instagram por cima da imagem. A OKENA
 
 <p align="center"><img src="screenshots/11-feed.png" width="260" alt="Formato Feed 4:5 retrato"></p>
 
-**Comentário (opcional, até 100 caracteres)**
-O contador mostra quantos caracteres você usou. A fonte é **adaptativa**: textos curtos saem grandes; textos
+**Comentário / legenda (opcional, até 100 caracteres)**
+A legenda fica solta sobre a foto, **sem caixa de fundo**. O contador mostra quantos caracteres você usou. A fonte é **adaptativa**: textos curtos saem grandes; textos
 longos diminuem para caber em até cerca de quatro linhas.
 
 **MOOD (opcional, até 40 caracteres)**
@@ -168,6 +170,19 @@ Deslize a fileira de fontes e toque na que quiser. Ela vale para o comentário *
 
 As fontes são baixadas da internet na primeira vez que você as usa. Sem conexão, o Story sai com a fonte Padrão.
 
+**Cor da legenda (6 opções)**
+
+| Cor | Como fica |
+|---|---|
+| Branco | Texto branco com sombra (padrão) |
+| Amarelo com borda preta | Amarelo vivo com contorno preto, estilo legenda de vídeo |
+| Preto com borda branca | Texto preto com contorno branco |
+| Rosa | Rosa com sombra |
+| Ciano | Azul-claro com sombra |
+| Verde-limão | Verde-limão com sombra |
+
+<p align="center"><img src="screenshots/cores-legenda.png" width="700" alt="As 6 cores de legenda"></p>
+
 **Alinhamento**
 
 | Ícone | Opção | Resultado |
@@ -181,7 +196,7 @@ As fontes são baixadas da internet na primeira vez que você as usa. Sem conex�
 Ligue ou desligue **Data** e **Hora**. Elas aparecem no canto inferior direito, em laranja, no estilo do
 carimbo das câmeras de filme (ex.: `23 11 '26  14:32`). Com os dois desligados, o carimbo some.
 
-A OKENA lembra a fonte, o alinhamento e o carimbo que você escolheu para os próximos Stories.
+A OKENA lembra a fonte, a cor, o alinhamento e o carimbo que você escolheu para os próximos Stories.
 
 <br clear="right">
 
@@ -196,7 +211,7 @@ A OKENA lembra a fonte, o alinhamento e o carimbo que você escolheu para os pr�
 | Selfie 3:4 | Canto superior direito, cantos arredondados, borda branca e sombra |
 | Seu @ | Logo abaixo da selfie, alinhado à direita dela |
 | 📍 Localização | Abaixo do @, com pin vermelho pequeno |
-| Comentário | Caixa translúcida na parte de baixo |
+| Legenda | Parte de baixo, só o texto (sem caixa), na cor escolhida |
 | Data / hora | Canto inferior direito, estilo LED retrô |
 | MOOD (ou “Janela do Mundo Real”, se vazio) | Canto inferior esquerdo, sempre abaixo da caixa de comentário (nunca se sobrepõem) |
 
@@ -292,6 +307,7 @@ e a versão instalada.
 | Mensagem / sintoma | O que fazer |
 |---|---|
 | **Permissão negada** | Toque no cadeado (ou “aA” no Safari) na barra de endereço e permita a câmera. No iPhone: **Ajustes › Safari › Câmera › Permitir** (ou Perguntar). Depois toque em **Tentar novamente**. |
+| O iPhone pede a câmera toda vez que abro o app | É uma regra do Safari para sites. Toque em **aA › Ajustes do Site › Câmera › Permitir** (ou Ajustes › Apps › Safari › Câmera › Permitir). |
 | **Câmera ocupada** | Feche outros apps ou abas que usam a câmera (chamadas de vídeo, outro app de câmera) e tente de novo. |
 | **Nenhuma câmera encontrada** | O aparelho não tem câmera disponível ou ela está desativada. |
 | **Conexão não segura** | Abra pelo endereço `https://oliveiracarlosadv.github.io/okena/`. |

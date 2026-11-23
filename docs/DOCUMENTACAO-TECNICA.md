@@ -1,6 +1,6 @@
 # Documentação técnica — OKENA
 
-Versão 1.4.0 · Single-Page Application em um único `index.html`, sem build e sem dependências além do Tailwind via CDN.
+Versão 1.5.0 · Single-Page Application em um único `index.html`, sem build e sem dependências além do Tailwind via CDN.
 
 ---
 
@@ -33,7 +33,7 @@ Um único objeto `state` no escopo do módulo (IIFE):
 | Campo | Tipo | Uso |
 |---|---|---|
 | `profile` | `{ name, handle, photo, location }` | Perfil; `photo` é um data URL JPEG 320×320 ou `null` |
-| `prefs` | `{ date, time, align, font, format, mode, camBack, camFront }` | Preferências do Story (persistidas) |
+| `prefs` | `{ date, time, align, font, format, mode, camBack, camFront, color }` | Preferências do Story (persistidas) |
 | `stream` | `MediaStream` | Stream ativo da câmera |
 | `flow` | `number` | **Token de fluxo**: incrementa a cada início/cancelamento, invalidando operações assíncronas antigas |
 | `back`, `front` | `HTMLCanvasElement` | Quadros capturados em resolução nativa |
@@ -46,7 +46,7 @@ Um único objeto `state` no escopo do módulo (IIFE):
 | Chave | Conteúdo |
 |---|---|
 | `okena:perfil` | `{"name": "...", "handle": "...", "photo": "data:image/jpeg;base64,...", "location": "Belém, PA"}` |
-| `okena:prefs` | `{"date": true, "time": true, "align": "justify", "font": "padrao", "format": "story", "mode": "photo", "camBack": "", "camFront": ""}` |
+| `okena:prefs` | `{"date": true, "time": true, "align": "justify", "font": "padrao", "format": "story", "mode": "photo", "camBack": "", "camFront": "", "color": "branco"}` |
 
 Leituras e gravações ficam em `try/catch`. Se o armazenamento falhar (modo privado, cota), o app segue com os
 dados em memória e avisa o usuário.
@@ -109,7 +109,8 @@ formato: `okena-{story|feed}-{handle}-{AAAAMMDD}-{HHMM}.png`.
 | 5b | Localização | `profile.location` (≤ 20 caracteres): texto 32 px alinhado à direita da selfie, 50 px abaixo do @, com pin vermelho `#EF4444` (gota com furo branco, `drawPin`) à esquerda |
 | 6 | Carimbo retrô | Display de 7 segmentos desenhado à mão, base em `H − 260`, altura 58 px, alinhado à direita |
 | 7 | Comentário (posição) | A linha de base (MOOD + carimbo) sempre existe; altura = `max(carimbo 58 px, MOOD × 1,15)`. A caixa termina 40 px acima dela, com ou sem carimbo |
-| 7b | Comentário | Caixa translúcida acima do carimbo, largura `W − 2M`, borda fina |
+| 7b | Legenda (cor) | Sem caixa de fundo. 6 cores em `COLORS` (`prefs.color`): com contorno (`amarelo` `#FFE14D`/preto, `preto`/branco — `strokeText` com `lineWidth` = 16 % da fonte, todas as linhas antes do preenchimento) ou com sombra dupla (`branco`, `rosa` `#FF5CAA`, `ciano` `#4FE3FF`, `verde` `#B6F23A`) |
+| 7c | Comentário | Caixa translúcida acima do carimbo, largura `W − 2M`, borda fina |
 | 8 | MOOD | Texto do campo MOOD (até 40 caracteres), 36 px peso 600, canto inferior esquerdo, truncado antes do carimbo. Vazio → “Janela do Mundo Real”, 28 px, 72 % de opacidade |
 
 ### Comentário: fonte adaptativa + alinhamento
@@ -197,7 +198,18 @@ Como a geração leva o tempo do vídeo, o navegador perde a "ativação do usu�
 Por isso o resultado aparece numa janela (**Vídeo pronto!**) com novos botões Compartilhar/Salvar. Nome:
 `okena-{story|feed}-{handle}-{AAAAMMDD}-{HHMM}.mp4`.
 
-## 4.2 Escolha de câmeras
+## 4.2 Permissão da câmera (uma vez só)
+
+- Ao trocar de câmera, `openCamera()` abre a nova **antes** de parar a anterior. Com uma captura ativa, o Safari
+  do iPhone não repete o pedido de permissão. Se o aparelho não abre duas câmeras ao mesmo tempo
+  (`NotReadableError`/`AbortError`), a anterior é liberada e a abertura é repetida.
+- `okena:camera-ok` (localStorage) registra que a permissão já foi dada. Se não existir (primeiro uso ou dados
+  limpos), a tela de carregamento explica que o pedido aparece só desta vez.
+- No primeiro uso no iPhone, uma dica única (`okena:camera-dica`) ensina a marcar **Permitir** em Ajustes do Site.
+- A permissão em si é guardada pelo navegador para o site e só volta a ser pedida se os dados do navegador
+  forem limpos ou a permissão for revogada.
+
+## 4.2.1 Escolha de câmeras
 
 `prefs.camBack` / `prefs.camFront` guardam o `deviceId` escolhido (vazio = automática por `facingMode`). A lista
 vem de `enumerateDevices()` (rótulos disponíveis depois da permissão de câmera). `openCamera` usa

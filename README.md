@@ -38,8 +38,9 @@ A imagem fica pronta para o Instagram, o WhatsApp ou a galeria, com:
 - a selfie em moldura **3:4** no canto superior direito, com borda branca e sombra;
 - o seu **@** logo abaixo da selfie e, se quiser, a sua **localização** com um pin vermelho (até 20 caracteres,
   digitada por você; o GPS não é usado);
-- um **comentário de até 100 caracteres**, com fonte que se ajusta ao tamanho do texto e alinhamento
-  **justificado, à esquerda, centralizado ou à direita**;
+- uma **legenda de até 100 caracteres**, solta sobre a foto (sem caixa de fundo), em **6 cores** (branco,
+  amarelo com borda preta, preto com borda branca, rosa, ciano e verde-limão), com fonte que se ajusta ao
+  tamanho do texto e alinhamento **justificado, à esquerda, centralizado ou à direita**;
 - **10 fontes** para o comentário e o MOOD (Padrão, Elegante, Clássica, Máquina, Mono, Caneta, Pacifico, Pôster, Marcador e Retrô);
 - o seu **MOOD** (como você está se sentindo, até 40 caracteres) no canto inferior esquerdo;
 - **data e/ou hora** no estilo do carimbo das câmeras de filme (display de LED laranja);
@@ -57,6 +58,10 @@ teleobjetiva, externa…) e qual faz a selfie.
 <div align="center">
   <img src="docs/screenshots/feed-exemplo.png" width="340" alt="Exemplo no formato Feed 4:5 retrato">
   <br><sub>Formato Feed (4:5, retrato)</sub>
+</div>
+
+<div align="center">
+  <img src="docs/screenshots/cores-legenda.png" width="760" alt="6 cores de legenda">
 </div>
 
 <div align="center">
@@ -84,9 +89,9 @@ Canvas API.
 |:-:|:-:|:-:|:-:|
 | <img src="docs/screenshots/12-modo-video.png" width="190"> | <img src="docs/screenshots/13-gravando.png" width="190"> | <img src="docs/screenshots/14-video-previa.png" width="190"> | <img src="docs/screenshots/16-video-pronto.png" width="190"> |
 
-| Localização | Escolher câmeras | Sem carimbo |
-|:-:|:-:|:-:|
-| <img src="docs/screenshots/17-local.png" width="190"> | <img src="docs/screenshots/18-cameras.png" width="190"> | <img src="docs/screenshots/story-sem-carimbo.png" width="190"> |
+| Localização | Escolher câmeras | Cores da legenda | Legenda amarela |
+|:-:|:-:|:-:|:-:|
+| <img src="docs/screenshots/17-local.png" width="190"> | <img src="docs/screenshots/18-cameras.png" width="190"> | <img src="docs/screenshots/19-cores-legenda.png" width="190"> | <img src="docs/screenshots/story-legenda-amarela.png" width="190"> |
 
 | Feed 4:5 | Sobre | Instalar no dispositivo |
 |:-:|:-:|:-:|

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0] — 2026-11-23
+
+- Legenda sem caixa preta de fundo: só o texto, em **6 cores** (branco, amarelo com borda preta, preto com borda
+  branca, rosa, ciano, verde-limão).
+- Permissão da câmera pedida **uma vez só**: a troca entre câmeras abre a nova antes de desligar a anterior, e o
+  aviso de permissão só aparece de novo se os dados do navegador forem limpos. Dica única para o iPhone.
+
 ## [1.4.0] — 2026-11-23
 
 - **Localização estática** (até 20 caracteres, digitada; sem GPS): nas Configurações e na câmera, antes de

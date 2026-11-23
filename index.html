@@ -80,6 +80,7 @@
     .shutter { box-shadow: 0 0 0 6px rgba(255,255,255,.25); }
     .shutter:active { transform: scale(.94); }
     .chip[aria-pressed="true"] { background: var(--amber); color: #111; border-color: var(--amber); }
+    .color-btn[aria-pressed="true"] { border-color: var(--amber); box-shadow: 0 0 0 2px var(--amber); }
     .mode-btn { color: rgba(255,255,255,.75); }
     .mode-btn[aria-pressed="true"] { background: #fff; color: #111; }
     #shutterDot { width: 3.6rem; height: 3.6rem; border-radius: 999px; }
@@ -179,7 +180,7 @@
         <img src="assets/logo-mark.svg" alt="" class="absolute left-3 top-3.5 h-5 w-5">
         <div class="absolute right-2.5 top-3.5 w-12 aspect-[3/4] rounded-lg border border-white/90 shadow-lg" style="background: linear-gradient(160deg,#c48b6a,#6b4a3a);"></div>
         <p id="mockHandle" class="absolute right-2.5 top-[5.6rem] max-w-[9rem] truncate text-right text-[8px] font-semibold"></p>
-        <div class="absolute left-3 right-3 bottom-12 rounded-lg bg-black/40 border border-white/10 p-1.5 text-[7px] leading-tight text-justify">Uma janela para o agora: o que eu vejo e quem está vendo.</div>
+        <div class="absolute left-3 right-3 bottom-12 text-[8px] font-bold leading-tight text-justify" style="color:#FFE14D;-webkit-text-stroke:.6px #000;paint-order:stroke fill">Uma janela para o agora: o que eu vejo e quem está vendo.</div>
         <p class="absolute right-3 bottom-5 retro text-[9px]">23 11 '26 14:32</p>
       </div>
 
@@ -317,6 +318,15 @@
         <p class="mt-1.5 text-xs text-neutral-500">Aparece no canto inferior esquerdo, no lugar de “Janela do Mundo Real”.</p>
         <p class="mt-4 text-sm text-neutral-400">Fonte do comentário e do MOOD:</p>
         <div id="fontPicker" class="mt-2 -mx-1 px-1 pb-1 flex gap-2 overflow-x-auto snap-x" role="group" aria-label="Fontes"></div>
+        <p class="mt-4 text-sm text-neutral-400">Cor da legenda:</p>
+        <div class="mt-2 grid grid-cols-6 gap-1.5" role="group" aria-label="Cor da legenda">
+          <button data-color="branco" class="color-btn grid place-items-center h-12 rounded-2xl border border-neutral-700 bg-neutral-800" aria-pressed="false" aria-label="Branco" title="Branco"><span class="text-2xl font-black leading-none" style="color:#FFFFFF;text-shadow:0 1px 4px rgba(0,0,0,.8);">Aa</span></button>
+          <button data-color="amarelo" class="color-btn grid place-items-center h-12 rounded-2xl border border-neutral-700 bg-neutral-800" aria-pressed="false" aria-label="Amarelo com borda preta" title="Amarelo com borda preta"><span class="text-2xl font-black leading-none" style="color:#FFE14D;-webkit-text-stroke:2px #000;paint-order:stroke fill;">Aa</span></button>
+          <button data-color="preto" class="color-btn grid place-items-center h-12 rounded-2xl border border-neutral-700 bg-neutral-800" aria-pressed="false" aria-label="Preto com borda branca" title="Preto com borda branca"><span class="text-2xl font-black leading-none" style="color:#0B0B0C;-webkit-text-stroke:2px #FFF;paint-order:stroke fill;">Aa</span></button>
+          <button data-color="rosa" class="color-btn grid place-items-center h-12 rounded-2xl border border-neutral-700 bg-neutral-800" aria-pressed="false" aria-label="Rosa" title="Rosa"><span class="text-2xl font-black leading-none" style="color:#FF5CAA;text-shadow:0 1px 4px rgba(0,0,0,.8);">Aa</span></button>
+          <button data-color="ciano" class="color-btn grid place-items-center h-12 rounded-2xl border border-neutral-700 bg-neutral-800" aria-pressed="false" aria-label="Ciano" title="Ciano"><span class="text-2xl font-black leading-none" style="color:#4FE3FF;text-shadow:0 1px 4px rgba(0,0,0,.8);">Aa</span></button>
+          <button data-color="verde" class="color-btn grid place-items-center h-12 rounded-2xl border border-neutral-700 bg-neutral-800" aria-pressed="false" aria-label="Verde-limão" title="Verde-limão"><span class="text-2xl font-black leading-none" style="color:#B6F23A;text-shadow:0 1px 4px rgba(0,0,0,.8);">Aa</span></button>
+        </div>
         <div class="mt-4 flex items-center gap-2">
           <span class="text-sm text-neutral-400 mr-1 shrink-0">Alinhamento:</span>
           <div class="grid grid-cols-4 gap-1.5 flex-1">
@@ -516,7 +526,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '1.4.0';
+  const VERSION = '1.5.0';
   const KEY_PROFILE = 'okena:perfil';
   const KEY_PREFS = 'okena:prefs';
   const W = 1080, H = 1920, M = 64;           // canvas do Story e margem
@@ -542,6 +552,16 @@
     { id: 'feed',  name: 'Feed',  ratio: '4:5',  h: 1350, top: 64,  bottom: 72,  selfie: 300, commentMax: 260 }, // retrato do feed: 1080×1350
   ];
   const currentFormat = () => FORMATS.find((f) => f.id === state.prefs.format) || FORMATS[0];
+  /* 6 cores para a legenda (comentário) */
+  const COLORS = [
+    { id: 'branco',   name: 'Branco',                    fill: '#FFFFFF', stroke: '' },
+    { id: 'amarelo',  name: 'Amarelo com borda preta',   fill: '#FFE14D', stroke: '#000000' },
+    { id: 'preto',    name: 'Preto com borda branca',    fill: '#0B0B0C', stroke: '#FFFFFF' },
+    { id: 'rosa',     name: 'Rosa',                      fill: '#FF5CAA', stroke: '' },
+    { id: 'ciano',    name: 'Ciano',                     fill: '#4FE3FF', stroke: '' },
+    { id: 'verde',    name: 'Verde-limão',               fill: '#B6F23A', stroke: '' },
+  ];
+  const currentColor = () => COLORS.find((c) => c.id === state.prefs.color) || COLORS[0];
   const fontCSS = (f, px) => `${f.weight} ${Math.round(px)}px ${f.family}`;
   const currentFont = () => FONTS.find((f) => f.id === state.prefs.font) || FONTS[0];
   const loadedFonts = new Set(['padrao']);
@@ -559,7 +579,7 @@
   const vibrate = (p) => { try { navigator.vibrate && navigator.vibrate(p); } catch (_) {} };
 
   const state = {
-    screen: null, profile: null, prefs: { date: true, time: true, align: 'justify', font: 'padrao', format: 'story', mode: 'photo', camBack: '', camFront: '' }, mode: 'photo', clip: null, videoOut: null, overlay: null, recorder: null,
+    screen: null, profile: null, prefs: { date: true, time: true, align: 'justify', font: 'padrao', format: 'story', mode: 'photo', camBack: '', camFront: '', color: 'branco' }, mode: 'photo', clip: null, videoOut: null, overlay: null, recorder: null,
     stream: null, flow: 0, step: 0,
     back: null, front: null, capturedAt: null,
     blob: null, url: null, fileName: 'okena.png',
@@ -582,12 +602,12 @@
   }
 
   let toastTimer;
-  function toast(msg) {
+  function toast(msg, ms) {
     const t = $('toast');
     t.textContent = msg;
     t.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+    toastTimer = setTimeout(() => t.classList.remove('show'), ms || 2800);
   }
 
   /* ---------------- perfil ---------------- */
@@ -756,9 +776,40 @@
     $('video').srcObject = null;
   }
 
+  /* Permissão da câmera pedida uma vez só.
+     Ao trocar de câmera (vista → selfie, Foto ↔ Vídeo, outra lente), a câmera nova é aberta ANTES de desligar a
+     anterior: com uma captura ativa o navegador — em especial o Safari do iPhone — não mostra o pedido de novo.
+     Só se o aparelho não conseguir abrir duas câmeras juntas a anterior é desligada primeiro.
+     Depois de liberada, o navegador guarda a permissão para o site; ela só volta a ser pedida se o usuário
+     limpar os dados do navegador (ou revogar nas configurações). */
+  const KEY_CAM = 'okena:camera-ok', KEY_CAM_TIP = 'okena:camera-dica';
+  const camGranted = () => { try { return localStorage.getItem(KEY_CAM) === '1'; } catch (_) { return false; } };
+  function markCameraGranted() {
+    try {
+      const first = localStorage.getItem(KEY_CAM) !== '1';
+      localStorage.setItem(KEY_CAM, '1');
+      if (first && isIOS && localStorage.getItem(KEY_CAM_TIP) !== '1') {
+        localStorage.setItem(KEY_CAM_TIP, '1');
+        setTimeout(() => toast('Dica: para o iPhone não perguntar mais, toque em “aA” › Ajustes do Site › Câmera › Permitir', 8000), 1200);
+      }
+    } catch (_) {}
+  }
   async function openCamera(facing, withAudio) {
-    stopStream(); // alguns aparelhos não abrem duas câmeras ao mesmo tempo
-    if (DEMO) return demoStream(facing === 'user' ? 'front' : 'back');
+    if (DEMO) { stopStream(); return demoStream(facing === 'user' ? 'front' : 'back'); }
+    const prev = state.stream;
+    let s;
+    try {
+      s = await requestCamera(facing, withAudio);
+    } catch (e) {
+      if (!prev || !['NotReadableError', 'AbortError', 'TrackStartError', 'OverconstrainedError'].includes(e.name)) throw e;
+      stopStream(); // aparelho não abre duas câmeras juntas: libera a anterior e tenta de novo
+      s = await requestCamera(facing, withAudio);
+    }
+    if (prev && state.stream === prev) { prev.getTracks().forEach((t) => t.stop()); state.stream = null; }
+    markCameraGranted();
+    return s;
+  }
+  async function requestCamera(facing, withAudio) {
     if (!window.isSecureContext) throw camError('InsecureContext');
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw camError('Unsupported');
     const role = facing === 'user' ? 'camFront' : 'camBack';
@@ -774,7 +825,7 @@
         // a câmera escolhida sumiu (ex.: câmera externa desconectada): volta para a automática
         state.prefs[role] = ''; writeJSON(KEY_PREFS, state.prefs);
         toast('A câmera escolhida não está disponível — usando a automática');
-        return openCamera(facing, withAudio);
+        return requestCamera(facing, withAudio);
       }
       if (e.name === 'OverconstrainedError' || e.name === 'ConstraintNotSatisfiedError') return get(true, !!withAudio);
       if (withAudio && (e.name === 'NotAllowedError' || e.name === 'NotFoundError' || e.name === 'NotReadableError')) {
@@ -941,7 +992,7 @@
     $('comment').value = ''; $('mood').value = ''; updateCount();
     setCamUI('back');
     show('camera');
-    camLoading(true);
+    camLoading(true, camGranted() ? 'Abrindo a câmera…' : 'Toque em “Permitir” para liberar a câmera — o pedido aparece só desta vez');
     try {
       const s = await openCamera('environment', state.mode === 'video');
       if (token !== state.flow) { s.getTracks().forEach((t) => t.stop()); return; }
@@ -1218,19 +1269,20 @@
     }
     return best;
   }
-  function drawAligned(x, lines, left, top, maxW, lh, size, align) {
+  function drawAligned(x, lines, left, top, maxW, lh, size, align, paint) {
+    paint = paint || ((t, a, b) => x.fillText(t, a, b));
     x.textBaseline = 'alphabetic';
     lines.forEach((words, i) => {
       const y = top + (i + 1) * lh - (lh - size) / 2 - size * 0.18;
       const line = words.join(' ');
-      if (align === 'center') { x.textAlign = 'center'; x.fillText(line, left + maxW / 2, y); x.textAlign = 'left'; return; }
-      if (align === 'right') { x.textAlign = 'right'; x.fillText(line, left + maxW, y); x.textAlign = 'left'; return; }
+      if (align === 'center') { x.textAlign = 'center'; paint(line, left + maxW / 2, y); x.textAlign = 'left'; return; }
+      if (align === 'right') { x.textAlign = 'right'; paint(line, left + maxW, y); x.textAlign = 'left'; return; }
       const last = i === lines.length - 1;
-      if (align === 'left' || last || words.length === 1) { x.fillText(line, left, y); return; }
+      if (align === 'left' || last || words.length === 1) { paint(line, left, y); return; }
       const total = words.reduce((s, w) => s + x.measureText(w).width, 0);
       const gap = (maxW - total) / (words.length - 1);
       let cx = left;
-      for (const w of words) { x.fillText(w, cx, y); cx += x.measureText(w).width + gap; }
+      for (const w of words) { paint(w, cx, y); cx += x.measureText(w).width + gap; }
     });
   }
 
@@ -1329,18 +1381,27 @@
     // 5) caixa de comentário (até 100 caracteres, alinhamento escolhido, fonte adaptativa)
     const text = $('comment').value.trim().replace(/\s+/g, ' ').slice(0, 100);
     if (text) {
-      const bw = W - M * 2, px = 44, py = 36;
+      // legenda solta, sem caixa de fundo: cor escolhida + contorno ou sombra para legibilidade
+      const C = currentColor();
+      const bw = W - M * 2, px = 6;
       const L = layoutComment(x, text, bw - px * 2, F.commentMax, fontNow);
-      const bh = L.lines.length * L.lh + py * 2;
-      const by = bottomLimit - bh;
+      const by = bottomLimit - L.lines.length * L.lh;
+      const args = [x, L.lines, M + px, by, bw - px * 2, L.lh, L.size, state.prefs.align];
       x.save();
-      x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 30;
-      rr(x, M, by, bw, bh, 38); x.fillStyle = 'rgba(10,10,12,.48)'; x.fill();
-      x.shadowBlur = 0;
-      x.lineWidth = 2; x.strokeStyle = 'rgba(255,255,255,.18)'; x.stroke();
       x.font = fontCSS(fontNow, L.size);
-      x.fillStyle = '#fff';
-      drawAligned(x, L.lines, M + px, by + py, bw - px * 2, L.lh, L.size, state.prefs.align);
+      x.lineJoin = 'round'; x.miterLimit = 2;
+      if (C.stroke) {
+        x.lineWidth = Math.max(4, Math.round(L.size * 0.16));
+        x.strokeStyle = C.stroke;
+        x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 10;
+        drawAligned(...args, (t, a, b) => x.strokeText(t, a, b));
+        x.shadowColor = 'transparent';
+      } else {
+        x.shadowColor = 'rgba(0,0,0,.75)'; x.shadowBlur = 18; x.shadowOffsetY = 2;
+      }
+      x.fillStyle = C.fill;
+      drawAligned(...args);
+      if (!C.stroke) { x.shadowBlur = 6; drawAligned(...args); } // segunda passada reforça a sombra sem caixa
       x.restore();
     }
 
@@ -1567,7 +1628,14 @@
     document.querySelectorAll('[data-align]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.align === state.prefs.align)));
     document.querySelectorAll('[data-font]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.font === state.prefs.font)));
     document.querySelectorAll('[data-format]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.format === state.prefs.format)));
+    document.querySelectorAll('[data-color]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.color === state.prefs.color)));
   }
+  document.querySelectorAll('[data-color]').forEach((b) => b.addEventListener('click', () => {
+    state.prefs.color = b.dataset.color;
+    writeJSON(KEY_PREFS, state.prefs);
+    syncChips();
+    render();
+  }));
   document.querySelectorAll('[data-format]').forEach((b) => b.addEventListener('click', () => {
     if (state.prefs.format === b.dataset.format) return;
     state.prefs.format = b.dataset.format;
@@ -1745,7 +1813,7 @@
   // início
   $('appVersion').textContent = VERSION;
   const prefs = readJSON(KEY_PREFS);
-  if (prefs && typeof prefs === 'object') state.prefs = { date: prefs.date !== false, time: prefs.time !== false, align: ['justify', 'left', 'center', 'right'].includes(prefs.align) ? prefs.align : 'justify', font: FONTS.some((f) => f.id === prefs.font) ? prefs.font : 'padrao', format: prefs.format === 'feed' ? 'feed' : 'story', mode: prefs.mode === 'video' ? 'video' : 'photo', camBack: typeof prefs.camBack === 'string' ? prefs.camBack : '', camFront: typeof prefs.camFront === 'string' ? prefs.camFront : '' };
+  if (prefs && typeof prefs === 'object') state.prefs = { date: prefs.date !== false, time: prefs.time !== false, align: ['justify', 'left', 'center', 'right'].includes(prefs.align) ? prefs.align : 'justify', font: FONTS.some((f) => f.id === prefs.font) ? prefs.font : 'padrao', format: prefs.format === 'feed' ? 'feed' : 'story', mode: prefs.mode === 'video' ? 'video' : 'photo', camBack: typeof prefs.camBack === 'string' ? prefs.camBack : '', camFront: typeof prefs.camFront === 'string' ? prefs.camFront : '', color: COLORS.some((c) => c.id === prefs.color) ? prefs.color : 'branco' };
   buildFontPicker();
   syncChips();
   state.profile = loadProfile();
