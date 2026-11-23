@@ -1,0 +1,24 @@
+{
+  "name": "OKENA — Janela do Mundo Real",
+  "short_name": "OKENA",
+  "description": "Gerador de Stories com câmera dupla: a vista + sua selfie, com @, comentário e carimbo de data retrô. 100% no navegador.",
+  "lang": "pt-BR",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0B0B0C",
+  "theme_color": "#0B0B0C",
+  "categories": ["photo", "social", "lifestyle"],
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "screenshots": [
+    { "src": "docs/screenshots/02-inicio.png", "sizes": "1170x2532", "type": "image/png", "form_factor": "narrow", "label": "Tela inicial" },
+    { "src": "docs/screenshots/05-previa.png", "sizes": "1170x2532", "type": "image/png", "form_factor": "narrow", "label": "Pré-visualização do Story" }
+  ]
+}

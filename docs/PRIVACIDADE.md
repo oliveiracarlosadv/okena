@@ -1,0 +1,41 @@
+# Política de privacidade — OKENA
+
+*Última atualização: 23 de novembro de 2026*
+
+A OKENA foi feita para que **nada saia do seu aparelho** sem a sua ação.
+
+## O que a OKENA acessa
+
+| Dado | Onde fica | Para quê |
+|---|---|---|
+| Câmera traseira e frontal | Somente na memória do navegador, durante a captura | Tirar a foto da vista e a selfie |
+| Nome completo, nome de usuário, foto de perfil | `localStorage` deste navegador | Saudação e identificação no Story |
+| Preferências (data, hora, alinhamento) | `localStorage` deste navegador | Lembrar suas escolhas |
+
+## O que a OKENA **não** faz
+
+- Não envia fotos, nomes ou qualquer dado para servidores. Não existe servidor da OKENA.
+- Não usa cookies, analytics, pixels de rastreamento ou anúncios.
+- Não pede login, e-mail ou telefone.
+- Não grava áudio.
+- Não guarda as fotos: a câmera é desligada assim que a selfie é tirada, e o Story só fica salvo se você
+  baixar ou compartilhar.
+
+## Terceiros
+
+- **GitHub Pages** hospeda os arquivos do app. Como qualquer servidor web, pode registrar dados técnicos de
+  acesso (IP, navegador), conforme a política de privacidade do GitHub.
+- **Tailwind CSS (cdn.tailwindcss.com)** fornece os estilos. O navegador baixa esse arquivo sem enviar nenhum dado seu.
+- Ao **compartilhar** um Story, a imagem vai para o app que você escolher (Instagram, WhatsApp etc.), sob as
+  regras desse app.
+
+## Como apagar seus dados
+
+- No app: **Configurações › Redefinir dados deste aparelho**; ou
+- no navegador: limpe os dados do site `oliveiracarlosadv.github.io`.
+
+## LGPD
+
+Como nenhum dado pessoal é coletado ou tratado pelo autor (tudo permanece no dispositivo do usuário), a OKENA
+não realiza tratamento de dados pessoais nos termos da Lei nº 13.709/2018. Dúvidas:
+[abra uma issue](https://github.com/oliveiracarlosadv/okena/issues).

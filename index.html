@@ -1,0 +1,1045 @@
+<!doctype html>
+<html lang="pt-BR" class="bg-neutral-950">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>OKENA — Janela do Mundo Real</title>
+  <meta name="description" content="OKENA é um gerador de Stories no estilo câmera dupla: foto traseira + selfie, seu @, comentário e carimbo de data retrô. Tudo processado no seu navegador, sem servidores.">
+  <meta name="keywords" content="okena, stories, câmera dupla, selfie, instagram stories, pwa, privacidade, canvas, gerador de stories">
+  <meta name="author" content="Carlos A. A. Oliveira">
+  <meta name="theme-color" content="#0B0B0C">
+  <meta name="color-scheme" content="dark">
+  <link rel="canonical" href="https://oliveiracarlosadv.github.io/okena/">
+
+  <!-- Open Graph / redes sociais -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="OKENA">
+  <meta property="og:title" content="OKENA — Janela do Mundo Real">
+  <meta property="og:description" content="Foto traseira + selfie em 5 segundos, com seu @, comentário e data retrô. 100% no seu navegador.">
+  <meta property="og:url" content="https://oliveiracarlosadv.github.io/okena/">
+  <meta property="og:image" content="https://oliveiracarlosadv.github.io/okena/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="pt_BR">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="OKENA — Janela do Mundo Real">
+  <meta name="twitter:description" content="Gerador de Stories com câmera dupla, 100% no navegador.">
+  <meta name="twitter:image" content="https://oliveiracarlosadv.github.io/okena/assets/og-image.png">
+
+  <!-- PWA / ícones -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="OKENA">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "OKENA",
+    "alternateName": "OKENA — Janela do Mundo Real",
+    "url": "https://oliveiracarlosadv.github.io/okena/",
+    "applicationCategory": "PhotographyApplication",
+    "operatingSystem": "Any (navegador moderno)",
+    "inLanguage": "pt-BR",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" },
+    "author": { "@type": "Person", "name": "Carlos A. A. Oliveira", "url": "https://github.com/oliveiracarlosadv" }
+  }
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { --amber: #FFC94D; --ink: #0B0B0C; }
+    html, body { background: var(--ink); overscroll-behavior: none; -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif; }
+    [hidden] { display: none !important; }
+    [data-screen] { display: none; min-height: 100dvh; }
+    [data-screen].active { display: flex; }
+    .pt-safe { padding-top: max(env(safe-area-inset-top), 16px); }
+    .pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 16px); }
+    .mirror { transform: scaleX(-1); }
+    .flash { animation: flash .45s ease-out; }
+    @keyframes flash { 0% { opacity: .95; } 100% { opacity: 0; } }
+    .pop { animation: pop .9s cubic-bezier(.2,.8,.2,1); }
+    @keyframes pop { 0% { transform: scale(1.6); opacity: 0; } 25% { transform: scale(1); opacity: 1; } 85% { opacity: 1; } 100% { opacity: .2; transform: scale(.9); } }
+    .spin { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #toast { transition: opacity .25s, transform .25s; opacity: 0; transform: translate(-50%, 12px); pointer-events: none; }
+    #toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .sheet-backdrop { animation: fadeIn .2s ease-out; }
+    .sheet-panel { animation: slideUp .28s cubic-bezier(.2,.8,.2,1); }
+    @keyframes fadeIn { from { opacity: 0; } }
+    @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } }
+    .shutter { box-shadow: 0 0 0 6px rgba(255,255,255,.25); }
+    .shutter:active { transform: scale(.94); }
+    .chip[aria-pressed="true"] { background: var(--amber); color: #111; border-color: var(--amber); }
+    .retro { font-family: "Courier New", ui-monospace, monospace; color: #FF9A3C; text-shadow: 0 0 6px rgba(255,120,30,.8); letter-spacing: .08em; }
+    textarea { resize: none; }
+  </style>
+</head>
+<body class="text-white antialiased">
+
+  <!-- ============ CADASTRO / EDIÇÃO DE PERFIL ============ -->
+  <section data-screen="setup" class="flex-col px-6 pt-safe pb-safe">
+    <form id="profileForm" class="w-full max-w-sm mx-auto my-auto py-8" novalidate>
+      <div class="flex items-center gap-3 mb-10">
+        <img src="assets/logo.svg" alt="" class="h-12 w-12 rounded-2xl">
+        <div>
+          <p class="text-2xl font-extrabold tracking-[0.2em]">OKENA</p>
+          <p class="text-sm text-neutral-400">Janela do Mundo Real</p>
+        </div>
+      </div>
+      <h1 id="setupTitle" class="text-3xl font-bold tracking-tight">Crie seu perfil</h1>
+      <p class="mt-2 text-neutral-400">Seus dados ficam salvos só neste aparelho. Nada é enviado para servidores.</p>
+
+      <div class="mt-8 flex items-center gap-4">
+        <button type="button" id="photoPick" class="relative shrink-0 h-20 w-20 rounded-full overflow-hidden bg-neutral-900 border-2 border-dashed border-neutral-700 grid place-items-center text-neutral-500" aria-label="Escolher foto de perfil">
+          <img id="photoPreview" alt="" class="absolute inset-0 h-full w-full object-cover" hidden>
+          <svg id="photoPlaceholder" class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="9" r="4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>
+        </button>
+        <div>
+          <p class="text-sm font-medium text-neutral-300">Foto de perfil <span class="text-neutral-500 font-normal">(opcional)</span></p>
+          <div class="mt-1.5 flex gap-3 text-sm">
+            <button type="button" id="photoChoose" class="font-semibold text-amber-300">Escolher foto</button>
+            <button type="button" id="photoRemove" class="text-neutral-400" hidden>Remover</button>
+          </div>
+          <p class="mt-1 text-xs text-neutral-500">Usada no seu perfil dentro do app.</p>
+        </div>
+        <input id="photoInput" type="file" accept="image/*" class="sr-only" tabindex="-1">
+      </div>
+
+      <label class="block mt-6">
+        <span class="text-sm font-medium text-neutral-300">Nome completo</span>
+        <input id="inName" type="text" autocomplete="name" maxlength="60" placeholder="Ex.: Maria da Silva"
+          class="mt-2 w-full rounded-2xl bg-neutral-900 border border-neutral-800 px-4 py-3.5 text-base outline-none focus:border-amber-300 placeholder:text-neutral-600">
+      </label>
+      <label class="block mt-5">
+        <span class="text-sm font-medium text-neutral-300">Nome de usuário</span>
+        <div class="mt-2 flex items-center rounded-2xl bg-neutral-900 border border-neutral-800 focus-within:border-amber-300">
+          <span class="pl-4 text-neutral-500 text-base">@</span>
+          <input id="inHandle" type="text" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="30" placeholder="seuusuario"
+            class="w-full bg-transparent px-1.5 py-3.5 text-base outline-none placeholder:text-neutral-600">
+        </div>
+        <span class="mt-1.5 block text-xs text-neutral-500">Letras, números, ponto e sublinhado.</span>
+      </label>
+
+      <p id="formError" class="mt-4 text-sm text-red-400" hidden></p>
+
+      <button type="submit" id="saveProfile" class="mt-8 w-full rounded-2xl bg-white text-black font-semibold py-4 active:scale-[.98] transition">Começar</button>
+      <button type="button" id="cancelEdit" class="mt-3 w-full rounded-2xl bg-neutral-900 text-neutral-200 font-medium py-3.5" hidden>Cancelar</button>
+      <button type="button" id="resetProfile" class="mt-6 w-full text-sm text-red-400/90 py-2" hidden>Redefinir dados deste aparelho</button>
+    </form>
+  </section>
+
+  <!-- ============ INÍCIO ============ -->
+  <section data-screen="home" class="flex-col px-6 pt-safe pb-safe">
+    <header class="flex items-center justify-between max-w-md w-full mx-auto">
+      <div class="flex items-center gap-2.5">
+        <img src="assets/logo.svg" alt="" class="h-9 w-9 rounded-xl">
+        <span class="text-lg font-extrabold tracking-[0.2em]">OKENA</span>
+      </div>
+      <button id="homeProfileBtn" class="flex items-center gap-2 rounded-full bg-neutral-900 border border-neutral-800 pl-3 pr-1 py-1" aria-label="Configurações">
+        <svg class="h-4 w-4 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        <span id="homeHandleSmall" class="text-sm text-neutral-300 max-w-[9rem] truncate"></span>
+        <span class="relative grid place-items-center h-8 w-8 rounded-full overflow-hidden bg-amber-300 text-black text-xs font-bold">
+          <span id="homeAvatar"></span>
+          <img id="homeAvatarImg" alt="" class="absolute inset-0 h-full w-full object-cover" hidden>
+        </span>
+      </button>
+    </header>
+
+    <main class="flex-1 flex flex-col items-center justify-center max-w-md w-full mx-auto py-8">
+      <!-- maquete do story -->
+      <div class="relative w-44 aspect-[9/16] rounded-[1.75rem] overflow-hidden border border-neutral-800 shadow-2xl shadow-black"
+           style="background: radial-gradient(120% 80% at 30% 20%, #3b4a5e 0%, #1c2430 45%, #0e1116 100%);">
+        <div class="absolute inset-x-0 bottom-0 h-1/2" style="background: linear-gradient(180deg, transparent, rgba(255,201,77,.18));"></div>
+        <img src="assets/logo-mark.svg" alt="" class="absolute left-3 top-3.5 h-5 w-5">
+        <div class="absolute right-2.5 top-3.5 w-12 aspect-[3/4] rounded-lg border border-white/90 shadow-lg" style="background: linear-gradient(160deg,#c48b6a,#6b4a3a);"></div>
+        <p id="mockHandle" class="absolute right-2.5 top-[5.6rem] max-w-[9rem] truncate text-right text-[8px] font-semibold"></p>
+        <div class="absolute left-3 right-3 bottom-12 rounded-lg bg-black/40 border border-white/10 p-1.5 text-[7px] leading-tight text-justify">Uma janela para o agora: o que eu vejo e quem está vendo.</div>
+        <p class="absolute right-3 bottom-5 retro text-[9px]">23 11 '26 14:32</p>
+      </div>
+
+      <h1 class="mt-10 text-3xl font-bold tracking-tight text-center">Olá, <span id="homeName"></span>.</h1>
+      <p class="mt-2 text-neutral-400 text-center">Primeiro a vista, depois você.<br>A selfie dispara sozinha em 5 segundos.</p>
+
+      <button id="startBtn" class="mt-8 w-full rounded-2xl bg-white text-black font-semibold py-4 text-lg active:scale-[.98] transition flex items-center justify-center gap-2">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a2 2 0 0 1 2-2h1.5l1.2-1.8A2 2 0 0 1 10.4 3.3h3.2a2 2 0 0 1 1.7.9L16.5 6H18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        Abrir a janela
+      </button>
+
+      <div class="mt-4 w-full space-y-3">
+        <button id="aboutBtn" class="w-full rounded-2xl bg-neutral-900 border border-neutral-800 text-neutral-200 font-medium py-3.5 flex items-center justify-center gap-2">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+          Sobre
+        </button>
+        <button id="installBtn" class="w-full rounded-2xl bg-neutral-900 border border-neutral-800 text-neutral-200 font-medium py-3.5 flex items-center justify-center gap-2">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M12 7v7M9 11l3 3 3-3"/></svg>
+          Instalar no dispositivo
+        </button>
+      </div>
+    </main>
+
+    <footer class="text-center text-xs text-neutral-500 max-w-md mx-auto">
+      🔒 Processamento 100% no seu aparelho. Nenhuma foto sai daqui sem você mandar.
+    </footer>
+  </section>
+
+  <!-- ============ CÂMERA ============ -->
+  <section data-screen="camera" class="fixed inset-0 bg-black overflow-hidden">
+    <video id="video" autoplay playsinline muted class="absolute inset-0 h-full w-full object-cover"></video>
+
+    <div id="camLoading" class="absolute inset-0 grid place-items-center bg-black/60">
+      <div class="flex flex-col items-center gap-3 text-neutral-300">
+        <div class="h-10 w-10 rounded-full border-2 border-white/20 border-t-white spin"></div>
+        <p id="camLoadingText" class="text-sm">Abrindo a câmera…</p>
+      </div>
+    </div>
+
+    <div class="absolute inset-x-0 top-0 pt-safe px-4 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent pb-10">
+      <button id="cancelFlow" class="grid place-items-center h-11 w-11 rounded-full bg-black/40 backdrop-blur" aria-label="Cancelar">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <span id="stepPill" class="rounded-full bg-black/40 backdrop-blur px-4 py-2 text-sm font-semibold"></span>
+      <span class="h-11 w-11"></span>
+    </div>
+
+    <div id="countdown" class="absolute inset-0 grid place-items-center pointer-events-none" hidden>
+      <span id="countNum" class="text-[10rem] font-black leading-none drop-shadow-[0_6px_30px_rgba(0,0,0,.6)]"></span>
+    </div>
+
+    <div class="absolute inset-x-0 bottom-0 pb-safe px-6 pt-16 bg-gradient-to-t from-black/70 to-transparent">
+      <p id="camHint" class="text-center text-sm text-neutral-200 mb-5"></p>
+      <div class="relative flex items-center justify-center h-24">
+        <img id="thumb" alt="Foto da vista" class="absolute left-0 h-20 w-14 object-cover rounded-xl border-2 border-white/90 shadow-lg" hidden>
+        <button id="shutter" class="shutter h-20 w-20 rounded-full bg-white disabled:opacity-40 transition" aria-label="Capturar foto" disabled></button>
+      </div>
+    </div>
+
+    <div id="flash" class="absolute inset-0 bg-white opacity-0 pointer-events-none"></div>
+  </section>
+
+  <!-- ============ PRÉ-VISUALIZAÇÃO / EDIÇÃO ============ -->
+  <section data-screen="preview" class="flex-col pt-safe pb-safe">
+    <header class="flex items-center justify-between px-5 max-w-md w-full mx-auto">
+      <div class="flex items-center gap-2.5">
+        <img src="assets/logo.svg" alt="" class="h-8 w-8 rounded-xl">
+        <span class="font-extrabold tracking-[0.2em]">OKENA</span>
+      </div>
+      <button id="previewProfileBtn" class="text-sm text-neutral-400 underline-offset-4 hover:underline">Configurações</button>
+    </header>
+
+    <main class="flex-1 w-full max-w-md mx-auto px-5 py-4 flex flex-col items-center">
+      <div class="relative">
+        <img id="storyImg" alt="Story gerado pela OKENA" class="max-h-[58dvh] w-auto max-w-full rounded-3xl border border-neutral-800 shadow-2xl shadow-black">
+        <div id="rendering" class="absolute inset-0 grid place-items-center rounded-3xl bg-black/50" hidden>
+          <div class="h-8 w-8 rounded-full border-2 border-white/20 border-t-white spin"></div>
+        </div>
+      </div>
+
+      <div class="w-full mt-5 rounded-3xl bg-neutral-900 border border-neutral-800 p-4">
+        <label for="comment" class="flex items-center justify-between text-sm font-medium text-neutral-300">
+          <span>Comentário <span class="text-neutral-500 font-normal">(opcional)</span></span>
+          <span id="commentCount" class="tabular-nums text-neutral-500">0/100</span>
+        </label>
+        <textarea id="comment" rows="2" maxlength="100" placeholder="O que essa janela mostra agora?"
+          class="mt-2 w-full rounded-2xl bg-black/40 border border-neutral-800 px-3.5 py-3 text-base outline-none focus:border-amber-300 placeholder:text-neutral-600"></textarea>
+        <div class="mt-3 flex items-center gap-2">
+          <span class="text-sm text-neutral-400 mr-1 shrink-0">Alinhamento:</span>
+          <div class="grid grid-cols-4 gap-1.5 flex-1">
+            <button data-align="justify" class="chip grid place-items-center rounded-xl border border-neutral-700 h-9" aria-pressed="false" aria-label="Justificado" title="Justificado"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg></button>
+            <button data-align="left" class="chip grid place-items-center rounded-xl border border-neutral-700 h-9" aria-pressed="false" aria-label="Alinhar à esquerda" title="Alinhar à esquerda"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 10h10M4 14h16M4 18h10"/></svg></button>
+            <button data-align="center" class="chip grid place-items-center rounded-xl border border-neutral-700 h-9" aria-pressed="false" aria-label="Centralizar" title="Centralizar"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M7 10h10M4 14h16M7 18h10"/></svg></button>
+            <button data-align="right" class="chip grid place-items-center rounded-xl border border-neutral-700 h-9" aria-pressed="false" aria-label="Alinhar à direita" title="Alinhar à direita"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M10 10h10M4 14h16M10 18h10"/></svg></button>
+          </div>
+        </div>
+        <div class="mt-3 flex items-center gap-2 flex-wrap">
+          <span class="text-sm text-neutral-400 mr-1">Carimbo retrô:</span>
+          <button id="chipDate" class="chip rounded-full border border-neutral-700 px-3.5 py-1.5 text-sm font-medium" aria-pressed="true">Data</button>
+          <button id="chipTime" class="chip rounded-full border border-neutral-700 px-3.5 py-1.5 text-sm font-medium" aria-pressed="true">Hora</button>
+        </div>
+      </div>
+
+      <div class="w-full mt-4 space-y-3">
+        <button id="shareBtn" class="w-full rounded-2xl bg-white text-black font-semibold py-4 flex items-center justify-center gap-2 active:scale-[.98] transition">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>
+          Compartilhar
+        </button>
+        <div class="grid grid-cols-2 gap-3">
+          <button id="downloadBtn" class="rounded-2xl bg-neutral-900 border border-neutral-800 font-medium py-3.5 flex items-center justify-center gap-2">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+            Baixar
+          </button>
+          <button id="againBtn" class="rounded-2xl bg-neutral-900 border border-neutral-800 font-medium py-3.5 flex items-center justify-center gap-2">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.6M4 4v4.6h4.6"/></svg>
+            Tirar outra
+          </button>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ============ ERRO ============ -->
+  <section data-screen="error" class="flex-col px-6 pt-safe pb-safe">
+    <div class="my-auto w-full max-w-sm mx-auto text-center">
+      <div class="mx-auto grid place-items-center h-16 w-16 rounded-2xl bg-red-500/10 text-red-400">
+        <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18M9.5 4.5h4.1a2 2 0 0 1 1.7.9L16.5 7H18a2 2 0 0 1 2 2v8.5M17 20H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1"/></svg>
+      </div>
+      <h1 id="errTitle" class="mt-6 text-2xl font-bold"></h1>
+      <p id="errMsg" class="mt-3 text-neutral-400 leading-relaxed"></p>
+      <button id="errRetry" class="mt-8 w-full rounded-2xl bg-white text-black font-semibold py-4">Tentar novamente</button>
+      <button id="errBack" class="mt-3 w-full rounded-2xl bg-neutral-900 text-neutral-200 font-medium py-3.5">Voltar ao início</button>
+    </div>
+  </section>
+
+  <!-- ============ MODAL: SOBRE ============ -->
+  <div id="aboutSheet" class="fixed inset-0 z-40" hidden>
+    <div class="sheet-backdrop absolute inset-0 bg-black/70" data-close></div>
+    <div class="sheet-panel absolute inset-x-0 bottom-0 max-h-[90dvh] overflow-y-auto rounded-t-[2rem] bg-neutral-900 border-t border-neutral-800 px-6 pt-3 pb-safe sm:max-w-md sm:mx-auto">
+      <div class="mx-auto h-1.5 w-10 rounded-full bg-neutral-700"></div>
+      <div class="flex justify-center mt-6">
+        <img src="assets/logo-wordmark.svg" alt="OKENA — Janela do Mundo Real" class="h-16">
+      </div>
+      <h2 class="mt-6 text-lg font-bold">O app</h2>
+      <p class="mt-1.5 text-neutral-300 leading-relaxed">
+        <strong>OKENA</strong> vem do tupi <em>okena</em>, “janela”. É um gerador de Stories de câmera dupla:
+        você registra a vista com a câmera traseira e, 5 segundos depois, a selfie dispara sozinha. O resultado é
+        um Story vertical 1080×1920 com seu @, um comentário e um carimbo de data no estilo das câmeras de filme.
+      </p>
+      <h2 class="mt-5 text-lg font-bold">O objetivo</h2>
+      <p class="mt-1.5 text-neutral-300 leading-relaxed">
+        Mostrar o mundo real, sem filtros nem edição: o que você vê e quem está vendo, no mesmo instante.
+        E com privacidade de verdade — todo o processamento acontece no seu navegador, sem servidores, sem contas, sem rastreamento.
+      </p>
+      <h2 class="mt-5 text-lg font-bold">O criador</h2>
+      <p class="mt-1.5 text-neutral-300 leading-relaxed">
+        Criado por <strong>Carlos A. A. Oliveira</strong>, advogado em Belém-PA, gamer e apaixonado por tecnologia —
+        projeto da <strong>LexTecnologias</strong>.
+      </p>
+      <div class="mt-4 grid grid-cols-2 gap-3">
+        <a href="https://github.com/oliveiracarlosadv/okena" target="_blank" rel="noopener" class="rounded-2xl bg-black/40 border border-neutral-800 py-3 text-center text-sm font-medium">GitHub do projeto</a>
+        <a href="http://www.oliveiracarlos.adv.br" target="_blank" rel="noopener" class="rounded-2xl bg-black/40 border border-neutral-800 py-3 text-center text-sm font-medium">Site do criador</a>
+      </div>
+      <p class="mt-6 text-center text-xs text-neutral-500">Código aberto sob licença MIT · v<span id="appVersion"></span></p>
+      <button class="mt-4 mb-2 w-full rounded-2xl bg-white text-black font-semibold py-3.5" data-close>Fechar</button>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: INSTALAR ============ -->
+  <div id="installSheet" class="fixed inset-0 z-40" hidden>
+    <div class="sheet-backdrop absolute inset-0 bg-black/70" data-close></div>
+    <div class="sheet-panel absolute inset-x-0 bottom-0 max-h-[90dvh] overflow-y-auto rounded-t-[2rem] bg-neutral-900 border-t border-neutral-800 px-6 pt-3 pb-safe sm:max-w-md sm:mx-auto">
+      <div class="mx-auto h-1.5 w-10 rounded-full bg-neutral-700"></div>
+      <div class="mt-6 flex items-center gap-3">
+        <img src="assets/logo.svg" alt="" class="h-12 w-12 rounded-2xl">
+        <div>
+          <h2 class="text-xl font-bold">Instalar a OKENA</h2>
+          <p class="text-sm text-neutral-400">Vira um app na sua tela inicial, abre em tela cheia.</p>
+        </div>
+      </div>
+
+      <p id="installedNote" class="mt-5 rounded-2xl bg-emerald-500/10 text-emerald-300 px-4 py-3 text-sm" hidden>✓ A OKENA já está instalada e aberta como app neste aparelho.</p>
+      <button id="installNow" class="mt-5 w-full rounded-2xl bg-amber-300 text-black font-semibold py-3.5" hidden>Instalar agora</button>
+
+      <div class="mt-5 grid grid-cols-3 gap-1 rounded-2xl bg-black/40 p-1 text-sm font-medium" role="tablist">
+        <button class="install-tab rounded-xl py-2" data-tab="ios" role="tab">iPhone</button>
+        <button class="install-tab rounded-xl py-2" data-tab="android" role="tab">Android</button>
+        <button class="install-tab rounded-xl py-2" data-tab="desktop" role="tab">Computador</button>
+      </div>
+
+      <ol class="install-panel mt-5 space-y-4" data-panel="ios">
+        <li class="flex gap-3"><span class="grid place-items-center shrink-0 h-7 w-7 rounded-full bg-amber-300 text-black text-sm font-bold">1</span><p class="text-neutral-300">Abra esta página no <strong>Safari</strong> (no iOS 16.4+ também funciona no Chrome e Edge).</p></li>
+        <li class="flex gap-3"><span class="grid place-items-center shrink-0 h-7 w-7 rounded-full bg-amber-300 text-black text-sm font-bold">2</span><p class="text-neutral-300">Toque no botão <strong>Compartilhar</strong> <svg class="inline h-5 w-5 -mt-1 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> na barra inferior (ou superior, no iPad).</p></li>
+        <li class="flex gap-3"><span class="grid place-items-center shrink-0 h-7 w-7 rounded-full bg-amber-300 text-black text-sm font-bold">3</span><p class="text-neutral-300">Role a lista e escolha <strong>“Adicionar à Tela de Início”</strong>.</p></li>
+        <li class="flex gap-3"><span class="grid place-items-center shrink-0 h-7 w-7 rounded-full bg-amber-300 text-black text-sm font-bold">4</span><p class="text-neutral-300">Confirme em <strong>Adicionar</strong>. O ícone da OKENA aparece na sua tela inicial.</p></li>
+      </ol>
+      <ol class="install-panel mt-5 space-y-4" data-panel="android">
+        <li class="flex gap-3"><span class="grid place-items-center shrink-0 h-7 w-7 rounded-full bg-amber-300 text-black text-sm font-bold">1</span><p class="text-neutral-300">Abra esta página no <strong>Chrome</strong> (ou Edge, Samsung Internet, Firefox).</p></li>
+        <li class="flex gap-3"><span class="grid place-items-center shrink-0 h-7 w-7 rounded-full bg-amber-300 text-black text-sm font-bold">2</span><p class="text-neutral-300">Toque no menu <strong>⋮</strong> no canto superior direito.</p></li>
+        <li class="flex gap-3"><span class="grid place-items-center shrink-0 h-7 w-7 rounded-full bg-amber-300 text-black text-sm font-bold">3</span><p class="text-neutral-300">Escolha <strong>“Instalar app”</strong> ou <strong>“Adicionar à tela inicial”</strong>.</p></li>
+        <li class="flex gap-3"><span class="grid place-items-center shrink-0 h-7 w-7 rounded-full bg-amber-300 text-black text-sm font-bold">4</span><p class="text-neutral-300">Confirme em <strong>Instalar</strong>. A OKENA passa a abrir como um app comum.</p></li>
+      </ol>
+      <ol class="install-panel mt-5 space-y-4" data-panel="desktop">
+        <li class="flex gap-3"><span class="grid place-items-center shrink-0 h-7 w-7 rounded-full bg-amber-300 text-black text-sm font-bold">1</span><p class="text-neutral-300"><strong>Chrome / Edge:</strong> clique no ícone de instalação <span class="inline-grid place-items-center h-5 w-5 rounded border border-neutral-500 text-[10px] align-middle">⤓</span> na barra de endereço, ou menu <strong>⋮ → Transmitir, salvar e compartilhar → Instalar página como app</strong>.</p></li>
+        <li class="flex gap-3"><span class="grid place-items-center shrink-0 h-7 w-7 rounded-full bg-amber-300 text-black text-sm font-bold">2</span><p class="text-neutral-300"><strong>Safari (macOS Sonoma+):</strong> menu <strong>Arquivo → Adicionar ao Dock</strong>.</p></li>
+        <li class="flex gap-3"><span class="grid place-items-center shrink-0 h-7 w-7 rounded-full bg-amber-300 text-black text-sm font-bold">3</span><p class="text-neutral-300">No computador a webcam é usada nas duas etapas. A experiência completa é no celular.</p></li>
+      </ol>
+
+      <p class="mt-6 text-xs text-neutral-500 leading-relaxed">Dica: a câmera só funciona em endereços seguros (https://). Instalada, a OKENA abre mais rápido e funciona mesmo com internet fraca.</p>
+      <button class="mt-5 mb-2 w-full rounded-2xl bg-white text-black font-semibold py-3.5" data-close>Entendi</button>
+    </div>
+  </div>
+
+  <div id="toast" class="fixed left-1/2 bottom-8 z-50 rounded-full bg-white text-black text-sm font-medium px-5 py-2.5 shadow-xl"></div>
+
+<script>
+(() => {
+  'use strict';
+
+  const VERSION = '1.0.0';
+  const KEY_PROFILE = 'okena:perfil';
+  const KEY_PREFS = 'okena:prefs';
+  const W = 1080, H = 1920, M = 64;           // canvas do Story e margem
+  const SAFE_TOP = 150;                       // área livre do cabeçalho do Instagram
+  const FONT = '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif';
+  const AMBER = '#FFC94D';
+  const DEMO = location.hash === '#demo';     // modo demonstração (sem câmera) para prints e testes
+
+  const $ = (id) => document.getElementById(id);
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const vibrate = (p) => { try { navigator.vibrate && navigator.vibrate(p); } catch (_) {} };
+
+  const state = {
+    screen: null, profile: null, prefs: { date: true, time: true, align: 'justify' },
+    stream: null, flow: 0, step: 0,
+    back: null, front: null, capturedAt: null,
+    blob: null, url: null, fileName: 'okena.png',
+    editing: false, returnTo: 'home', installPrompt: null,
+  };
+
+  /* ---------------- armazenamento local ---------------- */
+  function readJSON(key) { try { return JSON.parse(localStorage.getItem(key)); } catch (_) { return null; } }
+  function writeJSON(key, v) { try { localStorage.setItem(key, JSON.stringify(v)); return true; } catch (_) { return false; } }
+  function loadProfile() {
+    const p = readJSON(KEY_PROFILE);
+    return p && typeof p.name === 'string' && typeof p.handle === 'string' && p.name && p.handle ? p : null;
+  }
+
+  /* ---------------- navegação ---------------- */
+  function show(name) {
+    document.querySelectorAll('[data-screen]').forEach((s) => s.classList.toggle('active', s.dataset.screen === name));
+    state.screen = name;
+    window.scrollTo(0, 0);
+  }
+
+  let toastTimer;
+  function toast(msg) {
+    const t = $('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  /* ---------------- perfil ---------------- */
+  const normalizeHandle = (v) => v.trim().replace(/^@+/, '').replace(/\s+/g, '').toLowerCase();
+  const initials = (name) => name.trim().split(/\s+/).filter(Boolean).map((w) => w[0]).filter((c, i, a) => i === 0 || i === a.length - 1).join('').toUpperCase();
+
+  function renderProfile() {
+    const p = state.profile;
+    if (!p) return;
+    $('homeName').textContent = p.name.trim().split(/\s+/)[0];
+    $('homeHandleSmall').textContent = '@' + p.handle;
+    $('homeAvatar').textContent = initials(p.name);
+    $('mockHandle').textContent = '@' + p.handle;
+    $('homeAvatarImg').hidden = !p.photo;
+    if (p.photo) $('homeAvatarImg').src = p.photo;
+  }
+
+  /* ---------------- foto de perfil ---------------- */
+  function loadImage(src) {
+    return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+  }
+  function updatePhotoUI() {
+    const p = state.draftPhoto;
+    $('photoPreview').hidden = !p;
+    $('photoPlaceholder').hidden = !!p;
+    $('photoRemove').hidden = !p;
+    $('photoChoose').textContent = p ? 'Trocar foto' : 'Escolher foto';
+    if (p) $('photoPreview').src = p;
+  }
+  const pickPhoto = () => $('photoInput').click();
+  $('photoPick').addEventListener('click', pickPhoto);
+  $('photoChoose').addEventListener('click', pickPhoto);
+  $('photoRemove').addEventListener('click', () => { state.draftPhoto = null; updatePhotoUI(); });
+  $('photoInput').addEventListener('change', async (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    try {
+      const img = await loadImage(url);
+      // recorte quadrado central, 320×320, JPEG — leve o bastante para o localStorage
+      const S = 320, c = document.createElement('canvas');
+      c.width = c.height = S;
+      const x = c.getContext('2d');
+      x.imageSmoothingQuality = 'high';
+      const side = Math.min(img.naturalWidth, img.naturalHeight);
+      x.drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, S, S);
+      state.draftPhoto = c.toDataURL('image/jpeg', 0.85);
+      updatePhotoUI();
+    } catch (_) {
+      toast('Não foi possível ler essa imagem');
+    } finally { URL.revokeObjectURL(url); }
+  });
+
+  function openSetup(editing, returnTo) {
+    state.editing = editing;
+    state.returnTo = returnTo || 'home';
+    $('setupTitle').textContent = editing ? 'Configurações' : 'Crie seu perfil';
+    state.draftPhoto = editing && state.profile ? state.profile.photo || null : null;
+    updatePhotoUI();
+    $('saveProfile').textContent = editing ? 'Salvar' : 'Começar';
+    $('inName').value = editing && state.profile ? state.profile.name : '';
+    $('inHandle').value = editing && state.profile ? state.profile.handle : '';
+    $('cancelEdit').hidden = !editing;
+    $('resetProfile').hidden = !editing;
+    $('formError').hidden = true;
+    show('setup');
+  }
+
+  $('profileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = $('inName').value.trim().replace(/\s+/g, ' ');
+    const handle = normalizeHandle($('inHandle').value);
+    const err = $('formError');
+    if (name.length < 2) { err.textContent = 'Informe seu nome completo.'; err.hidden = false; return; }
+    if (!/^[a-z0-9._]{1,30}$/.test(handle)) { err.textContent = 'O @ aceita apenas letras, números, ponto e sublinhado (até 30).'; err.hidden = false; return; }
+    state.profile = { name, handle, photo: state.draftPhoto || null };
+    if (!writeJSON(KEY_PROFILE, state.profile)) toast('Modo privado: o perfil vale só nesta sessão');
+    else toast(state.editing ? 'Configurações salvas' : 'Bem-vindo(a) à OKENA');
+    renderProfile();
+    if (state.returnTo === 'preview' && state.back && state.front) { show('preview'); await render(); }
+    else show('home');
+  });
+  $('inHandle').addEventListener('input', (e) => { const v = e.target.value; if (v.startsWith('@')) e.target.value = v.replace(/^@+/, ''); });
+  $('cancelEdit').addEventListener('click', () => show(state.returnTo === 'preview' && state.back ? 'preview' : 'home'));
+  $('resetProfile').addEventListener('click', () => {
+    if (!confirm('Apagar nome e @ salvos neste aparelho?')) return;
+    try { localStorage.removeItem(KEY_PROFILE); } catch (_) {}
+    state.profile = null;
+    toast('Dados redefinidos');
+    openSetup(false);
+  });
+  $('homeProfileBtn').addEventListener('click', () => openSetup(true, 'home'));
+  $('previewProfileBtn').addEventListener('click', () => openSetup(true, 'preview'));
+
+  /* ---------------- câmera ---------------- */
+  function camError(name, message) { const e = new Error(message || name); e.name = name; return e; }
+
+  function stopStream() {
+    if (state.stream) { state.stream.getTracks().forEach((t) => t.stop()); state.stream = null; }
+    $('video').srcObject = null;
+  }
+
+  async function openCamera(facing) {
+    stopStream(); // alguns aparelhos não abrem duas câmeras ao mesmo tempo
+    if (!window.isSecureContext) throw camError('InsecureContext');
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw camError('Unsupported');
+    const video = { facingMode: { ideal: facing }, width: { ideal: 1920 }, height: { ideal: 1080 } };
+    try {
+      return await navigator.mediaDevices.getUserMedia({ audio: false, video });
+    } catch (e) {
+      if (e.name === 'OverconstrainedError' || e.name === 'ConstraintNotSatisfiedError') {
+        return navigator.mediaDevices.getUserMedia({ audio: false, video: true });
+      }
+      throw e;
+    }
+  }
+
+  async function attach(stream, mirror) {
+    const v = $('video');
+    state.stream = stream;
+    v.classList.toggle('mirror', mirror);
+    v.srcObject = stream;
+    try { await v.play(); } catch (_) {}
+    const t0 = performance.now();
+    while (!(v.videoWidth > 0 && v.readyState >= 2)) {
+      if (performance.now() - t0 > 8000) throw camError('TimeoutError');
+      await sleep(50);
+    }
+  }
+
+  function grabFrame(mirror) {
+    const v = $('video');
+    const c = document.createElement('canvas');
+    c.width = v.videoWidth; c.height = v.videoHeight;
+    const x = c.getContext('2d');
+    if (mirror) { x.translate(c.width, 0); x.scale(-1, 1); }
+    x.drawImage(v, 0, 0, c.width, c.height);
+    return c;
+  }
+
+  /* cenas sintéticas para o modo #demo */
+  function demoScene(kind) {
+    const c = document.createElement('canvas');
+    const [w, h] = kind === 'back' ? [1080, 1920] : [900, 1200];
+    c.width = w; c.height = h;
+    const x = c.getContext('2d');
+    if (kind === 'back') {
+      let g = x.createLinearGradient(0, 0, 0, h);
+      g.addColorStop(0, '#1d2b4a'); g.addColorStop(0.45, '#f08a4b'); g.addColorStop(0.62, '#ffd27a'); g.addColorStop(0.63, '#24435a'); g.addColorStop(1, '#0d1b26');
+      x.fillStyle = g; x.fillRect(0, 0, w, h);
+      x.fillStyle = 'rgba(255,236,190,.95)'; x.beginPath(); x.arc(w * 0.62, h * 0.55, 120, 0, Math.PI * 2); x.fill();
+      x.fillStyle = '#0d1b26'; x.fillRect(0, h * 0.62, w, h);
+      for (let i = 0; i < 40; i++) { x.fillStyle = `rgba(255,214,150,${0.15 + Math.random() * 0.35})`; x.fillRect(Math.random() * w, h * 0.63 + Math.random() * 260, 40 + Math.random() * 180, 4); }
+      x.fillStyle = '#081016';
+      x.beginPath(); x.moveTo(0, h * 0.62); for (let i = 0; i <= 12; i++) x.lineTo(i * w / 12, h * 0.62 - (i % 2 ? 60 : 140) - Math.random() * 120); x.lineTo(w, h * 0.62); x.fill();
+      x.beginPath(); x.moveTo(0, h); x.quadraticCurveTo(w * 0.3, h * 0.78, w * 0.55, h * 0.86); x.quadraticCurveTo(w * 0.8, h * 0.92, w, h * 0.82); x.lineTo(w, h); x.fill();
+    } else {
+      let g = x.createLinearGradient(0, 0, w, h);
+      g.addColorStop(0, '#3a3f58'); g.addColorStop(1, '#181a26');
+      x.fillStyle = g; x.fillRect(0, 0, w, h);
+      x.fillStyle = '#c98f6b'; x.beginPath(); x.ellipse(w / 2, h * 0.45, 230, 290, 0, 0, Math.PI * 2); x.fill();
+      x.fillStyle = '#2a1d17'; x.beginPath(); x.ellipse(w / 2, h * 0.3, 260, 170, 0, Math.PI, 0); x.fill();
+      x.fillStyle = '#1f1f2b'; x.beginPath(); x.ellipse(w / 2, h * 1.02, 400, 260, 0, Math.PI, 0); x.fill();
+      x.fillStyle = '#2a1d17'; [[-85], [85]].forEach(([dx]) => { x.beginPath(); x.arc(w / 2 + dx, h * 0.44, 18, 0, Math.PI * 2); x.fill(); });
+      x.strokeStyle = '#7a3e2e'; x.lineWidth = 12; x.lineCap = 'round'; x.beginPath(); x.arc(w / 2, h * 0.52, 80, 0.15 * Math.PI, 0.85 * Math.PI); x.stroke();
+    }
+    return c;
+  }
+
+  function setCamUI(step) {
+    const back = step === 'back';
+    $('stepPill').textContent = back ? '1/2 · A vista' : '2/2 · Você';
+    $('camHint').textContent = back ? 'Enquadre a vista e toque para capturar' : 'Sorria! A selfie dispara sozinha';
+    $('shutter').hidden = !back;
+    $('shutter').disabled = true;
+    $('countdown').hidden = true;
+    if (back) $('thumb').hidden = true;
+  }
+  function camLoading(on, text) {
+    $('camLoading').hidden = !on;
+    $('camLoadingText').textContent = text || 'Abrindo a câmera…';
+  }
+  function flash() { const f = $('flash'); f.classList.remove('flash'); void f.offsetWidth; f.classList.add('flash'); }
+  function setCount(n) { const el = $('countNum'); el.textContent = n; el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); $('countdown').hidden = false; }
+
+  async function startFlow() {
+    const token = ++state.flow;
+    state.back = state.front = null;
+    state.step = 1;
+    $('comment').value = ''; updateCount();
+    setCamUI('back');
+    show('camera');
+    camLoading(true);
+    if (DEMO) { $('video').classList.remove('mirror'); $('video').poster = demoScene('back').toDataURL('image/jpeg', 0.85); camLoading(false); $('shutter').disabled = false; return; }
+    try {
+      const s = await openCamera('environment');
+      if (token !== state.flow) { s.getTracks().forEach((t) => t.stop()); return; }
+      await attach(s, false);
+      if (token !== state.flow) return;
+      camLoading(false);
+      $('shutter').disabled = false;
+    } catch (e) { if (token === state.flow) fail(e); }
+  }
+
+  async function captureBack() {
+    if (state.step !== 1 || $('shutter').disabled) return;
+    const token = state.flow;
+    $('shutter').disabled = true;
+    state.capturedAt = new Date();
+    state.back = DEMO ? demoScene('back') : grabFrame(false);
+    flash(); vibrate(30);
+    const th = document.createElement('canvas');
+    th.width = 160; th.height = Math.round(160 * state.back.height / state.back.width);
+    th.getContext('2d').drawImage(state.back, 0, 0, th.width, th.height);
+    $('thumb').src = th.toDataURL('image/jpeg', 0.8);
+    $('thumb').hidden = false;
+
+    state.step = 2;
+    setCamUI('front');
+    camLoading(true, 'Virando para você…');
+    try {
+      let mirror = true;
+      if (!DEMO) {
+        const s = await openCamera('user');
+        if (token !== state.flow) { s.getTracks().forEach((t) => t.stop()); return; }
+        const st = (s.getVideoTracks()[0] && s.getVideoTracks()[0].getSettings && s.getVideoTracks()[0].getSettings()) || {};
+        mirror = st.facingMode !== 'environment';
+        await attach(s, mirror);
+      }
+      if (token !== state.flow) return;
+      if (DEMO) { $('video').classList.add('mirror'); $('video').poster = demoScene('front').toDataURL('image/jpeg', 0.85); }
+      camLoading(false);
+      await sleep(250);
+      for (let n = 5; n >= 1; n--) {
+        if (token !== state.flow) return;
+        setCount(n); vibrate(12);
+        await sleep(1000);
+      }
+      if (token !== state.flow) return;
+      $('countdown').hidden = true;
+      state.front = DEMO ? demoScene('front') : grabFrame(mirror);
+      flash(); vibrate([20, 40, 20]);
+      stopStream();
+      camLoading(true, 'Revelando…');
+      await render();
+      if (token !== state.flow) return;
+      show('preview');
+    } catch (e) { if (token === state.flow) fail(e); }
+  }
+
+  function cancelFlow() {
+    state.flow++;
+    stopStream();
+    $('countdown').hidden = true;
+    show(state.profile ? 'home' : 'setup');
+  }
+
+  function describeError(e) {
+    switch (e && e.name) {
+      case 'InsecureContext': return ['Conexão não segura', 'Os navegadores só liberam a câmera em páginas HTTPS ou em localhost. Abra a OKENA por um endereço https://.'];
+      case 'Unsupported': return ['Câmera indisponível', 'Este navegador não oferece acesso à câmera. Use uma versão recente do Safari, Chrome, Edge ou Firefox.'];
+      case 'NotAllowedError': case 'PermissionDeniedError': case 'SecurityError':
+        return ['Permissão negada', 'A OKENA precisa da câmera para funcionar. Toque no ícone de cadeado (ou “aA”) na barra de endereço, permita o acesso à câmera e tente novamente. No iPhone: Ajustes › Safari › Câmera › Permitir.'];
+      case 'NotFoundError': case 'DevicesNotFoundError': case 'OverconstrainedError':
+        return ['Nenhuma câmera encontrada', 'Não encontramos uma câmera neste aparelho. Verifique se ela está conectada e habilitada.'];
+      case 'NotReadableError': case 'TrackStartError': case 'AbortError':
+        return ['Câmera ocupada', 'Outro aplicativo ou aba pode estar usando a câmera. Feche-o e tente novamente.'];
+      case 'TimeoutError': return ['A câmera não respondeu', 'A imagem demorou demais para aparecer. Tente novamente.'];
+      default: return ['Algo deu errado', 'Não foi possível concluir a captura' + (e && e.message ? ` (${e.message})` : '') + '.'];
+    }
+  }
+  function fail(e) {
+    console.error(e);
+    state.flow++;
+    stopStream();
+    const [t, m] = describeError(e);
+    $('errTitle').textContent = t;
+    $('errMsg').textContent = m;
+    show('error');
+  }
+
+  /* ---------------- desenho no canvas ---------------- */
+  function rr(x, a, b, w, h, r) {
+    r = Math.min(r, w / 2, h / 2);
+    x.beginPath();
+    x.moveTo(a + r, b);
+    x.arcTo(a + w, b, a + w, b + h, r);
+    x.arcTo(a + w, b + h, a, b + h, r);
+    x.arcTo(a, b + h, a, b, r);
+    x.arcTo(a, b, a + w, b, r);
+    x.closePath();
+  }
+
+  function drawCover(x, img, dx, dy, dw, dh) {
+    const iw = img.width, ih = img.height;
+    const s = Math.max(dw / iw, dh / ih);
+    const sw = dw / s, sh = dh / s;
+    x.drawImage(img, (iw - sw) / 2, (ih - sh) / 2, sw, sh, dx, dy, dw, dh);
+  }
+
+  function fit(x, t, max) {
+    if (x.measureText(t).width <= max) return t;
+    while (t.length > 1 && x.measureText(t + '…').width > max) t = t.slice(0, -1);
+    return t + '…';
+  }
+
+  function drawLogo(x, left, top, size) {
+    // ícone: janela (moldura branca) + selfie âmbar
+    const lw = size * 0.11;
+    x.save();
+    x.shadowColor = 'rgba(0,0,0,.45)'; x.shadowBlur = 20;
+    rr(x, left + lw / 2, top + lw / 2, size - lw, size - lw, size * 0.27);
+    x.lineWidth = lw; x.strokeStyle = '#fff'; x.stroke();
+    x.shadowBlur = 0;
+    rr(x, left + size * 0.475, top + size * 0.2, size * 0.32, size * 0.43, size * 0.09);
+    x.fillStyle = AMBER; x.fill();
+    x.restore();
+  }
+
+  /* display de 7 segmentos — carimbo de data das câmeras de filme */
+  const SEG = { '0': 'abcdef', '1': 'bc', '2': 'abged', '3': 'abgcd', '4': 'fgbc', '5': 'afgcd', '6': 'afgedc', '7': 'abc', '8': 'abcdefg', '9': 'abcdfg', '-': 'g' };
+  function retroAdvance(ch, cw) { return ch === ' ' ? cw * 0.55 : ch === ':' ? cw * 0.55 : ch === "'" ? cw * 0.5 : cw * 1.38; }
+  function retroWidth(text, cw) { let w = 0; for (const ch of text) w += retroAdvance(ch, cw); return w; }
+  function drawRetro(x, text, right, baseline, ch) {
+    const cw = ch * 0.5, t = ch * 0.13, g = t * 0.75;
+    let cx = right - retroWidth(text, cw);
+    const top = baseline - ch;
+    const paint = () => {
+      let px = cx;
+      for (const c of text) {
+        const x0 = px + t / 2, x1 = px + cw - t / 2, y0 = top + t / 2, ym = top + ch / 2, y1 = top + ch - t / 2;
+        const segs = { a: [x0 + g, y0, x1 - g, y0], b: [x1, y0 + g, x1, ym - g], c: [x1, ym + g, x1, y1 - g], d: [x0 + g, y1, x1 - g, y1], e: [x0, ym + g, x0, y1 - g], f: [x0, y0 + g, x0, ym - g], g: [x0 + g, ym, x1 - g, ym] };
+        x.beginPath();
+        if (SEG[c]) for (const s of SEG[c]) { const [a, b, cc, d] = segs[s]; x.moveTo(a, b); x.lineTo(cc, d); }
+        else if (c === ':') { x.moveTo(px + cw * 0.2, top + ch * 0.32); x.lineTo(px + cw * 0.2, top + ch * 0.32); x.moveTo(px + cw * 0.2, top + ch * 0.7); x.lineTo(px + cw * 0.2, top + ch * 0.7); }
+        else if (c === "'") { x.moveTo(px + cw * 0.28, top + t * 0.3); x.lineTo(px + cw * 0.18, top + ch * 0.24); }
+        x.stroke();
+        px += retroAdvance(c, cw);
+      }
+    };
+    x.save();
+    x.setTransform(1, 0, -0.1, 1, baseline * 0.1, 0); // leve itálico, como nos visores de LED
+    x.lineCap = 'round'; x.lineJoin = 'round';
+    x.lineWidth = t;
+    x.strokeStyle = 'rgba(255,110,20,.55)'; x.shadowColor = 'rgba(255,90,0,1)'; x.shadowBlur = ch * 0.45;
+    paint(); paint();
+    x.shadowBlur = ch * 0.12; x.strokeStyle = '#FF9A3C';
+    paint();
+    x.lineWidth = t * 0.35; x.shadowBlur = 0; x.strokeStyle = 'rgba(255,230,190,.85)';
+    paint();
+    x.restore();
+    return { left: cx, top };
+  }
+
+  /* comentário: quebra de linha + justificado + fonte adaptativa */
+  function wrapWords(x, text, maxW) {
+    const words = text.split(/\s+/).filter(Boolean);
+    const lines = [];
+    let cur = [];
+    const width = (ws) => x.measureText(ws.join(' ')).width;
+    for (let w of words) {
+      while (x.measureText(w).width > maxW) { // palavra maior que a linha: quebra por caracteres
+        let i = w.length; while (i > 1 && x.measureText(w.slice(0, i)).width > maxW) i--;
+        if (cur.length) { lines.push(cur); cur = []; }
+        lines.push([w.slice(0, i)]); w = w.slice(i);
+      }
+      if (!w) continue;
+      if (cur.length && width([...cur, w]) > maxW) { lines.push(cur); cur = [w]; } else cur.push(w);
+    }
+    if (cur.length) lines.push(cur);
+    return lines;
+  }
+  function layoutComment(x, text, maxW, maxH) {
+    let best = null;
+    for (let size = 62; size >= 34; size -= 2) {
+      x.font = `600 ${size}px ${FONT}`;
+      const lines = wrapWords(x, text, maxW);
+      const lh = Math.round(size * 1.28);
+      best = { size, lines, lh };
+      if (lines.length * lh <= maxH) return best;
+    }
+    return best;
+  }
+  function drawAligned(x, lines, left, top, maxW, lh, size, align) {
+    x.textBaseline = 'alphabetic';
+    lines.forEach((words, i) => {
+      const y = top + (i + 1) * lh - (lh - size) / 2 - size * 0.18;
+      const line = words.join(' ');
+      if (align === 'center') { x.textAlign = 'center'; x.fillText(line, left + maxW / 2, y); x.textAlign = 'left'; return; }
+      if (align === 'right') { x.textAlign = 'right'; x.fillText(line, left + maxW, y); x.textAlign = 'left'; return; }
+      const last = i === lines.length - 1;
+      if (align === 'left' || last || words.length === 1) { x.fillText(line, left, y); return; }
+      const total = words.reduce((s, w) => s + x.measureText(w).width, 0);
+      const gap = (maxW - total) / (words.length - 1);
+      let cx = left;
+      for (const w of words) { x.fillText(w, cx, y); cx += x.measureText(w).width + gap; }
+    });
+  }
+
+  const pad2 = (n) => String(n).padStart(2, '0');
+  function stampText(d) {
+    const date = `${pad2(d.getDate())} ${pad2(d.getMonth() + 1)} '${String(d.getFullYear()).slice(-2)}`;
+    const time = `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+    const parts = [];
+    if (state.prefs.date) parts.push(date);
+    if (state.prefs.time) parts.push(time);
+    return parts.join('  ');
+  }
+
+  function compose() {
+    const c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    const x = c.getContext('2d');
+    x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high';
+    x.fillStyle = '#000'; x.fillRect(0, 0, W, H);
+
+    // 1) fundo: câmera traseira em "cover"
+    drawCover(x, state.back, 0, 0, W, H);
+
+    // vinhetas para legibilidade
+    let g = x.createLinearGradient(0, 0, 0, 640);
+    g.addColorStop(0, 'rgba(0,0,0,.6)'); g.addColorStop(0.6, 'rgba(0,0,0,.18)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    x.fillStyle = g; x.fillRect(0, 0, W, 640);
+    g = x.createLinearGradient(0, H - 760, 0, H);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.62)');
+    x.fillStyle = g; x.fillRect(0, H - 760, W, 760);
+
+    // 2) selfie 3:4 no canto superior direito
+    const sw = 342, sh = 456, sx = W - M - sw, sy = SAFE_TOP, r = 40;
+    x.save(); x.shadowColor = 'rgba(0,0,0,.55)'; x.shadowBlur = 50; x.shadowOffsetY = 18;
+    rr(x, sx, sy, sw, sh, r); x.fillStyle = '#111'; x.fill(); x.restore();
+    x.save(); rr(x, sx, sy, sw, sh, r); x.clip(); drawCover(x, state.front, sx, sy, sw, sh); x.restore();
+    x.save(); rr(x, sx, sy, sw, sh, r); x.lineWidth = 5; x.strokeStyle = 'rgba(255,255,255,.95)'; x.stroke(); x.restore();
+
+    // 3) marca d'água: somente o ícone
+    drawLogo(x, M, SAFE_TOP, 96);
+
+    // 4) @ do usuário (com foto de perfil) logo abaixo da foto 3:4, alinhado à direita dela
+    x.save();
+    x.font = `700 40px ${FONT}`;
+    x.fillStyle = '#fff';
+    x.shadowColor = 'rgba(0,0,0,.6)'; x.shadowBlur = 16;
+    x.textBaseline = 'middle';
+    const rowY = sy + sh + 52;
+    const right = sx + sw;
+    x.textAlign = 'right';
+    x.fillText(fit(x, '@' + state.profile.handle, right - M), right, rowY);
+    x.restore();
+
+    // 4) carimbo retrô (data/hora) no canto inferior direito
+    const stamp = stampText(state.capturedAt);
+    const stampBase = H - 260, stampH = 58;
+    let bottomLimit = H - 260 + 8;
+    if (stamp) { drawRetro(x, stamp, W - M, stampBase, stampH); bottomLimit = stampBase - stampH - 40; }
+
+    // 5) caixa de comentário (até 100 caracteres, justificado, fonte adaptativa)
+    const text = $('comment').value.trim().replace(/\s+/g, ' ').slice(0, 100);
+    if (text) {
+      const bw = W - M * 2, px = 44, py = 36;
+      const L = layoutComment(x, text, bw - px * 2, 360);
+      const bh = L.lines.length * L.lh + py * 2;
+      const by = bottomLimit - bh;
+      x.save();
+      x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 30;
+      rr(x, M, by, bw, bh, 38); x.fillStyle = 'rgba(10,10,12,.48)'; x.fill();
+      x.shadowBlur = 0;
+      x.lineWidth = 2; x.strokeStyle = 'rgba(255,255,255,.18)'; x.stroke();
+      x.font = `600 ${L.size}px ${FONT}`;
+      x.fillStyle = '#fff';
+      drawAligned(x, L.lines, M + px, by + py, bw - px * 2, L.lh, L.size, state.prefs.align);
+      x.restore();
+    }
+
+    // 6) assinatura discreta
+    x.save();
+    x.font = `500 28px ${FONT}`;
+    x.fillStyle = 'rgba(255,255,255,.72)';
+    x.shadowColor = 'rgba(0,0,0,.5)'; x.shadowBlur = 10;
+    x.textBaseline = 'alphabetic';
+    x.fillText('Janela do Mundo Real', M, stamp ? stampBase - 4 : H - 252);
+    x.restore();
+
+    return c;
+  }
+
+  let renderSeq = 0;
+  async function render() {
+    if (!state.back || !state.front || !state.profile) return;
+    const seq = ++renderSeq;
+    $('rendering').hidden = false;
+    await new Promise(requestAnimationFrame);
+    const c = compose();
+    const blob = await new Promise((res, rej) => c.toBlob((b) => (b ? res(b) : rej(new Error('Falha ao gerar a imagem'))), 'image/png'));
+    if (seq !== renderSeq) return;
+    if (state.url) URL.revokeObjectURL(state.url);
+    state.blob = blob;
+    state.url = URL.createObjectURL(blob);
+    $('storyImg').src = state.url;
+    const d = state.capturedAt;
+    state.fileName = `okena-${state.profile.handle}-${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}-${pad2(d.getHours())}${pad2(d.getMinutes())}.png`;
+    $('rendering').hidden = true;
+  }
+
+  /* ---------------- edição na pré-visualização ---------------- */
+  let commentTimer;
+  function updateCount() { $('commentCount').textContent = `${$('comment').value.length}/100`; }
+  $('comment').addEventListener('input', () => { updateCount(); clearTimeout(commentTimer); commentTimer = setTimeout(render, 250); });
+  function syncChips() {
+    $('chipDate').setAttribute('aria-pressed', String(state.prefs.date));
+    $('chipTime').setAttribute('aria-pressed', String(state.prefs.time));
+    document.querySelectorAll('[data-align]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.align === state.prefs.align)));
+  }
+  document.querySelectorAll('[data-align]').forEach((b) => b.addEventListener('click', () => {
+    state.prefs.align = b.dataset.align;
+    writeJSON(KEY_PREFS, state.prefs);
+    syncChips();
+    render();
+  }));
+  ['date', 'time'].forEach((k) => {
+    $(k === 'date' ? 'chipDate' : 'chipTime').addEventListener('click', () => {
+      state.prefs[k] = !state.prefs[k];
+      writeJSON(KEY_PREFS, state.prefs);
+      syncChips();
+      render();
+    });
+  });
+
+  /* ---------------- exportação ---------------- */
+  function download() {
+    if (!state.url) return;
+    const a = document.createElement('a');
+    a.href = state.url; a.download = state.fileName;
+    document.body.appendChild(a); a.click(); a.remove();
+    toast('Imagem baixada');
+  }
+  async function share() {
+    if (!state.blob) return;
+    const file = new File([state.blob], state.fileName, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file] }); }
+      catch (e) { if (e.name !== 'AbortError') { toast('Não deu para compartilhar — baixando'); download(); } }
+    } else {
+      toast('Compartilhamento indisponível aqui — baixando');
+      download();
+    }
+  }
+  $('shareBtn').addEventListener('click', share);
+  $('downloadBtn').addEventListener('click', download);
+  $('againBtn').addEventListener('click', startFlow);
+
+  /* ---------------- modais: Sobre e Instalar ---------------- */
+  function openSheet(id) { $(id).hidden = false; document.body.style.overflow = 'hidden'; }
+  function closeSheet(id) { $(id).hidden = true; document.body.style.overflow = ''; }
+  ['aboutSheet', 'installSheet'].forEach((id) => $(id).querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => closeSheet(id))));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { closeSheet('aboutSheet'); closeSheet('installSheet'); }
+    if ((e.key === ' ' || e.key === 'Enter') && state.screen === 'camera' && !$('shutter').hidden) { e.preventDefault(); captureBack(); }
+  });
+  $('aboutBtn').addEventListener('click', () => openSheet('aboutSheet'));
+
+  const ua = navigator.userAgent;
+  const isIOS = /iP(hone|ad|od)/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isAndroid = /Android/i.test(ua);
+  const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  function selectTab(tab) {
+    document.querySelectorAll('.install-tab').forEach((b) => {
+      const on = b.dataset.tab === tab;
+      b.classList.toggle('bg-neutral-700', on); b.classList.toggle('text-white', on); b.classList.toggle('text-neutral-400', !on);
+      b.setAttribute('aria-selected', String(on));
+    });
+    document.querySelectorAll('.install-panel').forEach((p) => { p.hidden = p.dataset.panel !== tab; });
+  }
+  document.querySelectorAll('.install-tab').forEach((b) => b.addEventListener('click', () => selectTab(b.dataset.tab)));
+  $('installBtn').addEventListener('click', () => {
+    $('installedNote').hidden = !isStandalone();
+    $('installNow').hidden = !state.installPrompt || isStandalone();
+    selectTab(isIOS ? 'ios' : isAndroid ? 'android' : 'desktop');
+    openSheet('installSheet');
+  });
+  window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); state.installPrompt = e; });
+  $('installNow').addEventListener('click', async () => {
+    const p = state.installPrompt; if (!p) return;
+    p.prompt();
+    const choice = await p.userChoice.catch(() => null);
+    state.installPrompt = null;
+    $('installNow').hidden = true;
+    if (choice && choice.outcome === 'accepted') { toast('OKENA instalada!'); closeSheet('installSheet'); }
+  });
+  window.addEventListener('appinstalled', () => toast('OKENA instalada!'));
+
+  /* ---------------- ciclo de vida ---------------- */
+  $('startBtn').addEventListener('click', startFlow);
+  $('shutter').addEventListener('click', captureBack);
+  $('cancelFlow').addEventListener('click', cancelFlow);
+  $('errRetry').addEventListener('click', startFlow);
+  $('errBack').addEventListener('click', () => show(state.profile ? 'home' : 'setup'));
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && state.screen === 'camera' && !DEMO) { cancelFlow(); toast('Captura interrompida'); }
+  });
+  window.addEventListener('pagehide', stopStream);
+
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  }
+
+  // início
+  $('appVersion').textContent = VERSION;
+  const prefs = readJSON(KEY_PREFS);
+  if (prefs && typeof prefs === 'object') state.prefs = { date: prefs.date !== false, time: prefs.time !== false, align: ['justify', 'left', 'center', 'right'].includes(prefs.align) ? prefs.align : 'justify' };
+  syncChips();
+  state.profile = loadProfile();
+  if (state.profile) { renderProfile(); show('home'); } else openSetup(false);
+
+  // ganchos para testes/prints (modo demonstração)
+  if (DEMO) window.__okena = { state, startFlow, captureBack, render, show, openSheet, openSetup, demoScene, selectTab };
+})();
+</script>
+</body>
+</html>
