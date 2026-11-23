@@ -77,6 +77,20 @@ Dicas:
 
 <br clear="right">
 
+## 4.1 Gravar vídeo (até 30 segundos)
+
+<img src="screenshots/13-gravando.png" width="260" align="right">
+
+1. Na câmera traseira, toque em **Vídeo** (acima do botão de captura). Na primeira vez, permita o **microfone**.
+2. O botão fica com um círculo vermelho. Toque para **começar a gravar**.
+3. Aparecem o cronômetro (`0:07 / 0:30`) e um anel vermelho que enche até 30 s.
+4. Toque de novo para **parar**. Aos 30 s a gravação para sozinha. O mínimo é 1 segundo.
+5. Em seguida vem a selfie em 5 segundos, igual ao modo Foto.
+
+Se o microfone for negado, o vídeo é gravado sem som. A OKENA lembra o último modo usado (Foto ou Vídeo).
+
+<br clear="right">
+
 ## 5. Capturar: a selfie em 5 segundos
 
 <img src="screenshots/04-contagem-selfie.png" width="260" align="right">
@@ -177,6 +191,23 @@ Os elementos ficam afastados das bordas de cima e de baixo para não ficarem esc
 
 <br clear="right">
 
+### Vídeo na pré-visualização
+
+<img src="screenshots/14-video-previa.png" width="260" align="right">
+
+O vídeo roda em loop com tudo por cima: selfie, @, comentário, MOOD, fonte e carimbo, e tudo pode ser editado
+igual à foto, inclusive Story/Feed. O botão 🔈 no canto liga o som da prévia.
+
+Ao tocar em **Compartilhar** ou **Salvar vídeo**, a OKENA **gera o vídeo final** no próprio aparelho. Isso leva
+o mesmo tempo do vídeo (um vídeo de 20 s leva cerca de 20 s), então **mantenha a tela aberta**. Quando terminar,
+aparece **Vídeo pronto!** com os botões **Compartilhar** e **Salvar vídeo**.
+
+- **iPhone:** em Salvar vídeo, toque em **Salvar Vídeo** na folha de compartilhamento para mandar às Fotos.
+- **Android:** o vídeo vai para a pasta **Download** e aparece na Galeria.
+- O arquivo é **MP4** (H.264) na maioria dos aparelhos; navegadores antigos geram WebM.
+
+<br clear="right">
+
 ## 7. Compartilhar, salvar na galeria ou tirar outra
 
 - **Compartilhar:** abre a folha de compartilhamento do sistema com o PNG. Escolha **Instagram** (Stories),
@@ -255,9 +286,17 @@ e a versão instalada.
 | A selfie usou a câmera traseira | Alguns aparelhos/navegadores não permitem escolher a câmera; atualize o navegador ou use o Safari/Chrome. |
 | “Salvar foto” não aparece na galeria (iPhone) | Na folha que abre, toque em **Salvar Imagem** (não em “Salvar em Arquivos”). Ou use o toque longo › **Adicionar às Fotos**. |
 | “Compartilhar” não abriu a lista de apps | Seu navegador não suporta compartilhar arquivos: salve com **Salvar foto** e compartilhe pela galeria. |
+| O vídeo ficou sem som | O microfone foi negado. Libere em Ajustes › Safari › Microfone (iPhone) ou no cadeado da barra de endereço e grave de novo. |
+| “Gerando o vídeo…” parou | A tela apagou ou você trocou de app. Toque em Salvar/Compartilhar de novo com a tela aberta. |
 | A fonte escolhida não apareceu | As fontes precisam de internet na primeira vez. Conecte-se e toque na fonte de novo. |
 | O Instagram não aparece na lista | Atualize o Instagram e, no iPhone, role a primeira linha de apps até “Mais” para ativá-lo. |
 | Perdi meu perfil | Os dados ficam no navegador; limpar dados de navegação ou usar aba anônima apaga o perfil. É só cadastrar de novo. |
+
+## 11.1 Atualizações
+
+A OKENA se atualiza sozinha. **Basta fechar e abrir o app** (ou recarregar a página) para receber a versão
+mais nova. Não é preciso reinstalar nem limpar dados; seu perfil e suas preferências são mantidos. A versão
+instalada aparece em **Sobre**.
 
 ## 12. Perguntas frequentes
 

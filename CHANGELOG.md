@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0] — 2026-11-23
+
+- **Vídeos de até 30 segundos** com som: modo Foto/Vídeo na câmera, cronômetro e anel de progresso, selfie em
+  5 s em seguida, prévia em loop com todas as edições e geração do MP4 final no aparelho (Story ou Feed).
+- **Atualização automática:** basta fechar e abrir o app para receber a versão nova.
+- Modo demonstração (`#demo`) agora simula as câmeras com vídeo animado, testando o mesmo caminho do app real.
+
 ## [1.2.0] — 2026-11-23
 
 - Escolha do formato na hora de postar: **Story** (9:16, 1080 × 1920) ou **Feed** (4:5, 1080 × 1350), sempre em retrato.

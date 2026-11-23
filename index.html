@@ -80,6 +80,10 @@
     .shutter { box-shadow: 0 0 0 6px rgba(255,255,255,.25); }
     .shutter:active { transform: scale(.94); }
     .chip[aria-pressed="true"] { background: var(--amber); color: #111; border-color: var(--amber); }
+    .mode-btn { color: rgba(255,255,255,.75); }
+    .mode-btn[aria-pressed="true"] { background: #fff; color: #111; }
+    #shutterDot { width: 3.6rem; height: 3.6rem; border-radius: 999px; }
+    #shutterDot.rec { width: 2rem; height: 2rem; border-radius: .5rem; }
     .retro { font-family: "Courier New", ui-monospace, monospace; color: #FF9A3C; text-shadow: 0 0 6px rgba(255,120,30,.8); letter-spacing: .08em; }
     textarea { resize: none; }
   </style>
@@ -211,15 +215,31 @@
       <span class="h-11 w-11"></span>
     </div>
 
+    <div id="recTimer" class="absolute left-1/2 -translate-x-1/2 top-24 rounded-full bg-red-600 px-4 py-1.5 text-sm font-bold tabular-nums flex items-center gap-2" hidden>
+      <span class="h-2.5 w-2.5 rounded-full bg-white animate-pulse"></span><span id="recTime">0:00</span><span class="opacity-70 font-medium">/ 0:30</span>
+    </div>
+
     <div id="countdown" class="absolute inset-0 grid place-items-center pointer-events-none" hidden>
       <span id="countNum" class="text-[10rem] font-black leading-none drop-shadow-[0_6px_30px_rgba(0,0,0,.6)]"></span>
     </div>
 
     <div class="absolute inset-x-0 bottom-0 pb-safe px-6 pt-16 bg-gradient-to-t from-black/70 to-transparent">
-      <p id="camHint" class="text-center text-sm text-neutral-200 mb-5"></p>
+      <p id="camHint" class="text-center text-sm text-neutral-200 mb-4"></p>
+      <div id="modeSwitch" class="mx-auto mb-4 w-max grid grid-cols-2 gap-1 rounded-full bg-black/50 backdrop-blur p-1 text-sm font-semibold" role="group" aria-label="Modo de captura">
+        <button data-mode="photo" class="mode-btn rounded-full px-5 py-1.5" aria-pressed="true">Foto</button>
+        <button data-mode="video" class="mode-btn rounded-full px-5 py-1.5" aria-pressed="false">Vídeo</button>
+      </div>
       <div class="relative flex items-center justify-center h-24">
         <img id="thumb" alt="Foto da vista" class="absolute left-0 h-20 w-14 object-cover rounded-xl border-2 border-white/90 shadow-lg" hidden>
-        <button id="shutter" class="shutter h-20 w-20 rounded-full bg-white disabled:opacity-40 transition" aria-label="Capturar foto" disabled></button>
+        <div class="relative h-24 w-24 grid place-items-center">
+          <svg id="recRing" class="absolute inset-0 h-24 w-24 -rotate-90 pointer-events-none" viewBox="0 0 100 100" hidden>
+            <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="6"/>
+            <circle id="recArc" cx="50" cy="50" r="46" fill="none" stroke="#ef4444" stroke-width="6" stroke-linecap="round" stroke-dasharray="289.03" stroke-dashoffset="289.03"/>
+          </svg>
+          <button id="shutter" class="shutter h-20 w-20 rounded-full bg-white disabled:opacity-40 transition grid place-items-center" aria-label="Capturar foto" disabled>
+            <span id="shutterDot" class="block bg-red-500 transition-all duration-200" hidden></span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -249,6 +269,14 @@
       </div>
       <div class="relative">
         <img id="storyImg" alt="Story gerado pela OKENA" class="max-h-[58dvh] w-auto max-w-full rounded-3xl border border-neutral-800 shadow-2xl shadow-black">
+        <canvas id="storyCanvas" class="max-h-[58dvh] w-auto max-w-full rounded-3xl border border-neutral-800 shadow-2xl shadow-black" hidden></canvas>
+        <button id="soundBtn" class="absolute right-3 bottom-3 grid place-items-center h-10 w-10 rounded-full bg-black/60 backdrop-blur" aria-label="Ativar som" hidden>
+          <svg id="soundOff" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4zM22 9l-6 6M16 9l6 6"/></svg>
+          <svg id="soundOn" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>
+        </button>
+        <span id="videoBadge" class="absolute left-3 bottom-3 rounded-full bg-black/60 backdrop-blur px-3 py-1 text-xs font-semibold tabular-nums" hidden></span>
+        <video id="previewVid" playsinline muted loop class="hidden"></video>
+        <video id="exportVid" playsinline class="hidden"></video>
         <div id="rendering" class="absolute inset-0 grid place-items-center rounded-3xl bg-black/50" hidden>
           <div class="h-8 w-8 rounded-full border-2 border-white/20 border-t-white spin"></div>
         </div>
@@ -294,7 +322,7 @@
         <div class="grid grid-cols-2 gap-3">
           <button id="downloadBtn" class="rounded-2xl bg-neutral-900 border border-neutral-800 font-medium py-3.5 flex items-center justify-center gap-2">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
-            Salvar foto
+            <span id="downloadLabel">Salvar foto</span>
           </button>
           <button id="againBtn" class="rounded-2xl bg-neutral-900 border border-neutral-800 font-medium py-3.5 flex items-center justify-center gap-2">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.6M4 4v4.6h4.6"/></svg>
@@ -311,6 +339,28 @@
     <p class="mt-1 text-center text-sm text-neutral-400">e escolha <strong class="text-white">“Adicionar às Fotos”</strong> (iPhone) ou <strong class="text-white">“Baixar imagem”</strong> (Android).</p>
     <img id="saveImg" alt="Story para salvar" class="mt-5 max-h-[68dvh] w-auto max-w-full rounded-2xl border border-neutral-800" style="-webkit-touch-callout: default; user-select: auto;">
     <button id="saveClose" class="mt-6 w-full max-w-sm rounded-2xl bg-white text-black font-semibold py-3.5">Pronto</button>
+  </div>
+
+  <!-- ============ GERAR / SALVAR VÍDEO ============ -->
+  <div id="videoSheet" class="fixed inset-0 z-50 bg-black/90 flex items-center justify-center px-6" hidden>
+    <div class="w-full max-w-sm rounded-3xl bg-neutral-900 border border-neutral-800 p-6 text-center">
+      <div id="vsWorking">
+        <div class="mx-auto h-10 w-10 rounded-full border-2 border-white/20 border-t-amber-300 spin"></div>
+        <p class="mt-4 text-lg font-semibold">Gerando o vídeo…</p>
+        <p class="mt-1 text-sm text-neutral-400">Mantenha a tela aberta. Leva o mesmo tempo do vídeo.</p>
+        <div class="mt-5 h-2 rounded-full bg-neutral-800 overflow-hidden"><div id="vsBar" class="h-full w-0 bg-amber-300 transition-[width] duration-200"></div></div>
+        <p id="vsPct" class="mt-2 text-xs text-neutral-500 tabular-nums">0%</p>
+        <button id="vsCancel" class="mt-5 w-full rounded-2xl bg-neutral-800 font-medium py-3">Cancelar</button>
+      </div>
+      <div id="vsReady" hidden>
+        <div class="mx-auto grid place-items-center h-12 w-12 rounded-full bg-emerald-500/15 text-emerald-300 text-2xl">✓</div>
+        <p class="mt-4 text-lg font-semibold">Vídeo pronto!</p>
+        <p id="vsInfo" class="mt-1 text-sm text-neutral-400"></p>
+        <button id="vsShare" class="mt-5 w-full rounded-2xl bg-white text-black font-semibold py-3.5">Compartilhar</button>
+        <button id="vsSave" class="mt-3 w-full rounded-2xl bg-neutral-800 font-medium py-3.5">Salvar vídeo</button>
+        <button id="vsClose" class="mt-3 w-full text-sm text-neutral-400 py-2">Fechar</button>
+      </div>
+    </div>
   </div>
 
   <!-- ============ ERRO ============ -->
@@ -410,7 +460,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '1.2.0';
+  const VERSION = '1.3.0';
   const KEY_PROFILE = 'okena:perfil';
   const KEY_PREFS = 'okena:prefs';
   const W = 1080, H = 1920, M = 64;           // canvas do Story e margem
@@ -453,7 +503,7 @@
   const vibrate = (p) => { try { navigator.vibrate && navigator.vibrate(p); } catch (_) {} };
 
   const state = {
-    screen: null, profile: null, prefs: { date: true, time: true, align: 'justify', font: 'padrao', format: 'story' },
+    screen: null, profile: null, prefs: { date: true, time: true, align: 'justify', font: 'padrao', format: 'story', mode: 'photo' }, mode: 'photo', clip: null, videoOut: null, overlay: null, recorder: null,
     stream: null, flow: 0, step: 0,
     back: null, front: null, capturedAt: null,
     blob: null, url: null, fileName: 'okena.png',
@@ -585,16 +635,21 @@
     $('video').srcObject = null;
   }
 
-  async function openCamera(facing) {
+  async function openCamera(facing, withAudio) {
     stopStream(); // alguns aparelhos não abrem duas câmeras ao mesmo tempo
+    if (DEMO) return demoStream(facing === 'user' ? 'front' : 'back');
     if (!window.isSecureContext) throw camError('InsecureContext');
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw camError('Unsupported');
     const video = { facingMode: { ideal: facing }, width: { ideal: 1920 }, height: { ideal: 1080 } };
+    const get = (v, a) => navigator.mediaDevices.getUserMedia({ audio: a, video: v });
     try {
-      return await navigator.mediaDevices.getUserMedia({ audio: false, video });
+      return await get(video, !!withAudio);
     } catch (e) {
-      if (e.name === 'OverconstrainedError' || e.name === 'ConstraintNotSatisfiedError') {
-        return navigator.mediaDevices.getUserMedia({ audio: false, video: true });
+      if (e.name === 'OverconstrainedError' || e.name === 'ConstraintNotSatisfiedError') return get(true, !!withAudio);
+      if (withAudio && (e.name === 'NotAllowedError' || e.name === 'NotFoundError' || e.name === 'NotReadableError')) {
+        const s = await get(video, false); // microfone negado/ausente: grava sem som
+        toast('Sem acesso ao microfone — o vídeo será gravado sem som');
+        return s;
       }
       throw e;
     }
@@ -633,12 +688,8 @@
       let g = x.createLinearGradient(0, 0, 0, h);
       g.addColorStop(0, '#1d2b4a'); g.addColorStop(0.45, '#f08a4b'); g.addColorStop(0.62, '#ffd27a'); g.addColorStop(0.63, '#24435a'); g.addColorStop(1, '#0d1b26');
       x.fillStyle = g; x.fillRect(0, 0, w, h);
-      x.fillStyle = 'rgba(255,236,190,.95)'; x.beginPath(); x.arc(w * 0.62, h * 0.55, 120, 0, Math.PI * 2); x.fill();
       x.fillStyle = '#0d1b26'; x.fillRect(0, h * 0.62, w, h);
       for (let i = 0; i < 40; i++) { x.fillStyle = `rgba(255,214,150,${0.15 + Math.random() * 0.35})`; x.fillRect(Math.random() * w, h * 0.63 + Math.random() * 260, 40 + Math.random() * 180, 4); }
-      x.fillStyle = '#081016';
-      x.beginPath(); x.moveTo(0, h * 0.62); for (let i = 0; i <= 12; i++) x.lineTo(i * w / 12, h * 0.62 - (i % 2 ? 60 : 140) - Math.random() * 120); x.lineTo(w, h * 0.62); x.fill();
-      x.beginPath(); x.moveTo(0, h); x.quadraticCurveTo(w * 0.3, h * 0.78, w * 0.55, h * 0.86); x.quadraticCurveTo(w * 0.8, h * 0.92, w, h * 0.82); x.lineTo(w, h); x.fill();
     } else {
       let g = x.createLinearGradient(0, 0, w, h);
       g.addColorStop(0, '#3a3f58'); g.addColorStop(1, '#181a26');
@@ -651,15 +702,86 @@
     }
     return c;
   }
+  /* "câmera" animada do modo #demo: canvas → MediaStream (permite testar foto e vídeo sem câmera) */
+  function demoStream(kind) {
+    const base = demoScene(kind);
+    const c = document.createElement('canvas');
+    c.width = base.width; c.height = base.height;
+    const x = c.getContext('2d');
+    const ridge = Array.from({ length: 13 }, (_, i) => (i % 2 ? 60 : 140) + ((i * 37) % 90));
+    const t0 = performance.now();
+    const paint = () => {
+      const t = (performance.now() - t0) / 1000;
+      x.drawImage(base, 0, 0);
+      if (kind === 'back') {
+        const w = c.width, h = c.height;
+        x.fillStyle = 'rgba(255,236,190,.95)'; x.beginPath(); x.arc(w * 0.62, h * 0.58 - Math.min(t, 30) * 4, 120, 0, Math.PI * 2); x.fill();
+        x.fillStyle = '#081016';
+        x.beginPath(); x.moveTo(0, h * 0.62); ridge.forEach((r, i) => x.lineTo(i * w / 12, h * 0.62 - r)); x.lineTo(w, h * 0.62); x.fill();
+        x.fillStyle = 'rgba(255,255,255,.5)'; for (let i = 0; i < 3; i++) { x.beginPath(); x.ellipse(((t * 40 + i * 400) % (w + 300)) - 150, 300 + i * 120, 140, 30, 0, 0, Math.PI * 2); x.fill(); }
+        x.fillStyle = '#081016'; x.beginPath(); x.moveTo(0, h); x.quadraticCurveTo(w * 0.3, h * 0.78, w * 0.55, h * 0.86); x.quadraticCurveTo(w * 0.8, h * 0.92, w, h * 0.82); x.lineTo(w, h); x.fill();
+      }
+    };
+    paint();
+    const id = setInterval(paint, 1000 / 30);
+    const s = c.captureStream(30);
+    s.getVideoTracks()[0].addEventListener('ended', () => clearInterval(id));
+    const stop = s.getVideoTracks()[0].stop.bind(s.getVideoTracks()[0]);
+    s.getVideoTracks()[0].stop = () => { clearInterval(id); stop(); };
+    return s;
+  }
+
+  /* ---------------- modo Foto / Vídeo ---------------- */
+  const MAX_REC = 30; // segundos
+  const VIDEO_TYPES = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+  const pickMime = () => (window.MediaRecorder && MediaRecorder.isTypeSupported ? VIDEO_TYPES.find((t) => MediaRecorder.isTypeSupported(t)) : '') || '';
+  const videoSupported = !!(window.MediaRecorder && HTMLCanvasElement.prototype.captureStream);
+  const extFor = (mime) => (/mp4/.test(mime) ? 'mp4' : 'webm');
+
+  function syncModeUI() {
+    const video = state.mode === 'video';
+    document.querySelectorAll('[data-mode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === state.mode)));
+    $('shutterDot').hidden = !video;
+    $('shutter').setAttribute('aria-label', video ? 'Gravar vídeo' : 'Capturar foto');
+    if (state.step === 1 && !state.recorder) $('camHint').textContent = video ? `Toque para gravar a vista (até ${MAX_REC} s)` : 'Enquadre a vista e toque para capturar';
+  }
+  async function setMode(mode) {
+    if (state.step !== 1 || state.recorder || mode === state.mode) return;
+    state.mode = mode;
+    state.prefs.mode = mode;
+    writeJSON(KEY_PREFS, state.prefs);
+    syncModeUI();
+    const hasAudio = state.stream && state.stream.getAudioTracks().length > 0;
+    if (mode === 'video' && !hasAudio && !DEMO) await reopenBack(true);
+    if (mode === 'photo' && hasAudio) await reopenBack(false); // libera o microfone
+  }
+  async function reopenBack(withAudio) {
+    const token = state.flow;
+    $('shutter').disabled = true;
+    camLoading(true);
+    try {
+      const s = await openCamera('environment', withAudio);
+      if (token !== state.flow) { s.getTracks().forEach((t) => t.stop()); return; }
+      await attach(s, false);
+      if (token !== state.flow) return;
+      camLoading(false);
+      $('shutter').disabled = false;
+    } catch (e) { if (token === state.flow) fail(e); }
+  }
+  document.querySelectorAll('[data-mode]').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
 
   function setCamUI(step) {
     const back = step === 'back';
     $('stepPill').textContent = back ? '1/2 · A vista' : '2/2 · Você';
-    $('camHint').textContent = back ? 'Enquadre a vista e toque para capturar' : 'Sorria! A selfie dispara sozinha';
+    $('camHint').textContent = back ? '' : 'Sorria! A selfie dispara sozinha';
     $('shutter').hidden = !back;
     $('shutter').disabled = true;
+    $('modeSwitch').hidden = !back || !videoSupported;
     $('countdown').hidden = true;
-    if (back) $('thumb').hidden = true;
+    $('recTimer').hidden = true;
+    $('recRing').hidden = true;
+    $('shutterDot').classList.remove('rec');
+    if (back) { $('thumb').hidden = true; syncModeUI(); }
   }
   function camLoading(on, text) {
     $('camLoading').hidden = !on;
@@ -668,17 +790,27 @@
   function flash() { const f = $('flash'); f.classList.remove('flash'); void f.offsetWidth; f.classList.add('flash'); }
   function setCount(n) { const el = $('countNum'); el.textContent = n; el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); $('countdown').hidden = false; }
 
+  function clearClip() {
+    stopPreviewLoop();
+    if (state.clip) URL.revokeObjectURL(state.clip.url);
+    if (state.videoOut) URL.revokeObjectURL(state.videoOut.url);
+    state.clip = null;
+    state.videoOut = null;
+    const ev = $('exportVid'); ev.pause(); ev.removeAttribute('src'); ev.dataset.src = ''; ev.load();
+  }
+
   async function startFlow() {
     const token = ++state.flow;
     state.back = state.front = null;
+    clearClip();
     state.step = 1;
+    state.mode = videoSupported && state.prefs.mode === 'video' ? 'video' : 'photo';
     $('comment').value = ''; $('mood').value = ''; updateCount();
     setCamUI('back');
     show('camera');
     camLoading(true);
-    if (DEMO) { $('video').classList.remove('mirror'); $('video').poster = demoScene('back').toDataURL('image/jpeg', 0.85); camLoading(false); $('shutter').disabled = false; return; }
     try {
-      const s = await openCamera('environment');
+      const s = await openCamera('environment', state.mode === 'video');
       if (token !== state.flow) { s.getTracks().forEach((t) => t.stop()); return; }
       await attach(s, false);
       if (token !== state.flow) return;
@@ -687,33 +819,97 @@
     } catch (e) { if (token === state.flow) fail(e); }
   }
 
-  async function captureBack() {
+  function onShutter() {
     if (state.step !== 1 || $('shutter').disabled) return;
+    if (state.mode === 'video') { if (state.recorder) stopRecording(); else startRecording(); }
+    else captureBack();
+  }
+
+  function setThumb(src) {
+    const th = document.createElement('canvas');
+    th.width = 160; th.height = Math.round(160 * src.height / src.width);
+    th.getContext('2d').drawImage(src, 0, 0, th.width, th.height);
+    $('thumb').src = th.toDataURL('image/jpeg', 0.8);
+    $('thumb').hidden = false;
+  }
+
+  async function captureBack() {
     const token = state.flow;
     $('shutter').disabled = true;
     state.capturedAt = new Date();
-    state.back = DEMO ? demoScene('back') : grabFrame(false);
+    state.back = grabFrame(false);
     flash(); vibrate(30);
-    const th = document.createElement('canvas');
-    th.width = 160; th.height = Math.round(160 * state.back.height / state.back.width);
-    th.getContext('2d').drawImage(state.back, 0, 0, th.width, th.height);
-    $('thumb').src = th.toDataURL('image/jpeg', 0.8);
-    $('thumb').hidden = false;
+    setThumb(state.back);
+    await goFront(token);
+  }
 
+  /* gravação da vista (câmera traseira), até 30 s */
+  function startRecording() {
+    const stream = state.stream;
+    if (!stream) return;
+    const mime = pickMime();
+    let rec;
+    try { rec = new MediaRecorder(stream, mime ? { mimeType: mime, videoBitsPerSecond: 8e6 } : { videoBitsPerSecond: 8e6 }); }
+    catch (e) { fail(camError('RecorderError', 'gravação de vídeo não suportada neste navegador')); return; }
+    const token = state.flow;
+    const chunks = [];
+    const hasAudio = stream.getAudioTracks().length > 0;
+    rec.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = async () => {
+      clearInterval(state.recTick);
+      const secs = Math.min(MAX_REC, (performance.now() - state.recStart) / 1000);
+      state.recorder = null;
+      if (token !== state.flow) return;
+      $('recTimer').hidden = true; $('recRing').hidden = true;
+      $('shutterDot').classList.remove('rec');
+      if (secs < 1 || !chunks.length) { toast('Vídeo muito curto — grave pelo menos 1 segundo'); $('shutter').disabled = false; $('modeSwitch').hidden = false; syncModeUI(); return; }
+      const type = rec.mimeType || mime || 'video/webm';
+      const blob = new Blob(chunks, { type });
+      state.clip = { blob, url: URL.createObjectURL(blob), mime: type, duration: secs, hasAudio };
+      vibrate([20, 40, 20]);
+      await goFront(token);
+    };
+    state.recorder = rec;
+    state.capturedAt = new Date();
+    state.recStart = performance.now();
+    rec.start(250);
+    vibrate(30);
+    $('modeSwitch').hidden = true;
+    $('shutterDot').classList.add('rec');
+    $('shutter').setAttribute('aria-label', 'Parar gravação');
+    $('camHint').textContent = 'Toque de novo para parar';
+    $('recTimer').hidden = false; $('recRing').hidden = false;
+    const arc = $('recArc'), C = 289.03;
+    const tick = () => {
+      const s = (performance.now() - state.recStart) / 1000;
+      $('recTime').textContent = `0:${String(Math.min(MAX_REC, Math.floor(s))).padStart(2, '0')}`;
+      arc.setAttribute('stroke-dashoffset', String(C * (1 - Math.min(1, s / MAX_REC))));
+      if (s >= MAX_REC) stopRecording();
+    };
+    tick();
+    state.recTick = setInterval(tick, 100);
+  }
+  function stopRecording() {
+    const rec = state.recorder;
+    if (!rec || rec.state === 'inactive') return;
+    $('shutter').disabled = true;
+    clearInterval(state.recTick);
+    try { state.back = grabFrame(false); setThumb(state.back); } catch (_) {}
+    rec.stop();
+  }
+
+  /* selfie: câmera frontal + contagem de 5 s */
+  async function goFront(token) {
     state.step = 2;
     setCamUI('front');
     camLoading(true, 'Virando para você…');
     try {
-      let mirror = true;
-      if (!DEMO) {
-        const s = await openCamera('user');
-        if (token !== state.flow) { s.getTracks().forEach((t) => t.stop()); return; }
-        const st = (s.getVideoTracks()[0] && s.getVideoTracks()[0].getSettings && s.getVideoTracks()[0].getSettings()) || {};
-        mirror = st.facingMode !== 'environment';
-        await attach(s, mirror);
-      }
+      const s = await openCamera('user', false);
+      if (token !== state.flow) { s.getTracks().forEach((t) => t.stop()); return; }
+      const st = (s.getVideoTracks()[0] && s.getVideoTracks()[0].getSettings && s.getVideoTracks()[0].getSettings()) || {};
+      const mirror = st.facingMode !== 'environment';
+      await attach(s, mirror);
       if (token !== state.flow) return;
-      if (DEMO) { $('video').classList.add('mirror'); $('video').poster = demoScene('front').toDataURL('image/jpeg', 0.85); }
       camLoading(false);
       await sleep(250);
       for (let n = 5; n >= 1; n--) {
@@ -723,7 +919,7 @@
       }
       if (token !== state.flow) return;
       $('countdown').hidden = true;
-      state.front = DEMO ? demoScene('front') : grabFrame(mirror);
+      state.front = grabFrame(mirror);
       flash(); vibrate([20, 40, 20]);
       stopStream();
       camLoading(true, 'Revelando…');
@@ -735,7 +931,11 @@
 
   function cancelFlow() {
     state.flow++;
+    if (state.recorder && state.recorder.state !== 'inactive') { try { state.recorder.stop(); } catch (_) {} }
+    state.recorder = null;
+    clearInterval(state.recTick);
     stopStream();
+    clearClip();
     $('countdown').hidden = true;
     show(state.profile ? 'home' : 'setup');
   }
@@ -777,7 +977,7 @@
   }
 
   function drawCover(x, img, dx, dy, dw, dh) {
-    const iw = img.width, ih = img.height;
+    const iw = img.videoWidth || img.naturalWidth || img.width, ih = img.videoHeight || img.naturalHeight || img.height;
     const s = Math.max(dw / iw, dh / ih);
     const sw = dw / s, sh = dh / s;
     x.drawImage(img, (iw - sw) / 2, (ih - sh) / 2, sw, sh, dx, dy, dw, dh);
@@ -893,17 +1093,27 @@
     return parts.join('  ');
   }
 
-  function compose() {
+  /* imagem final da foto: fundo (câmera traseira em "cover") + camada fixa */
+  function compose(overlay) {
+    const c = document.createElement('canvas');
+    c.width = overlay.width; c.height = overlay.height;
+    const x = c.getContext('2d');
+    x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high';
+    x.fillStyle = '#000'; x.fillRect(0, 0, c.width, c.height);
+    drawCover(x, state.back, 0, 0, c.width, c.height);
+    x.drawImage(overlay, 0, 0);
+    return c;
+  }
+
+  /* camada fixa (transparente): vinhetas, selfie, ícone, @, carimbo, comentário e MOOD.
+     Na foto vai sobre a imagem traseira; no vídeo, sobre cada quadro. */
+  function composeOverlay() {
     const F = currentFormat();
     const H = F.h, SAFE_TOP = F.top, BOTTOM = F.bottom; // Story 1080×1920 ou Feed 1080×1350 (sempre retrato)
     const c = document.createElement('canvas');
     c.width = W; c.height = H;
     const x = c.getContext('2d');
     x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high';
-    x.fillStyle = '#000'; x.fillRect(0, 0, W, H);
-
-    // 1) fundo: câmera traseira em "cover"
-    drawCover(x, state.back, 0, 0, W, H);
 
     // vinhetas para legibilidade
     const vt = Math.round(H / 3), vb = Math.round(H * 0.4);
@@ -984,6 +1194,18 @@
   }
 
   let renderSeq = 0;
+  function fileBase() {
+    const d = state.capturedAt;
+    return `okena-${currentFormat().id}-${state.profile.handle}-${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}-${pad2(d.getHours())}${pad2(d.getMinutes())}`;
+  }
+  function showMedia(video) {
+    $('storyImg').hidden = video;
+    $('storyCanvas').hidden = !video;
+    $('videoBadge').hidden = !video;
+    $('soundBtn').hidden = !(video && state.clip && state.clip.hasAudio);
+    if (video && state.clip) $('videoBadge').textContent = `▶ Vídeo · ${Math.max(1, Math.round(state.clip.duration))} s`;
+    $('downloadLabel').textContent = video ? 'Salvar vídeo' : 'Salvar foto';
+  }
   async function render() {
     if (!state.back || !state.front || !state.profile) return;
     const seq = ++renderSeq;
@@ -991,17 +1213,172 @@
     await ensureFont(currentFont());
     await new Promise(requestAnimationFrame);
     if (seq !== renderSeq) return;
-    const c = compose();
+    const overlay = composeOverlay();
+    if (state.clip) {
+      // vídeo: a camada fixa (selfie, @, textos, carimbo) é desenhada uma vez e sobreposta a cada quadro
+      state.overlay = overlay;
+      if (state.videoOut) { URL.revokeObjectURL(state.videoOut.url); state.videoOut = null; }
+      state.fileName = fileBase() + '.' + extFor(state.clip.mime);
+      const cv = $('storyCanvas');
+      if (cv.width !== overlay.width || cv.height !== overlay.height) { cv.width = overlay.width; cv.height = overlay.height; }
+      showMedia(true);
+      startPreviewLoop();
+      $('rendering').hidden = true;
+      return;
+    }
+    showMedia(false);
+    const c = compose(overlay);
     const blob = await new Promise((res, rej) => c.toBlob((b) => (b ? res(b) : rej(new Error('Falha ao gerar a imagem'))), 'image/png'));
     if (seq !== renderSeq) return;
     if (state.url) URL.revokeObjectURL(state.url);
     state.blob = blob;
     state.url = URL.createObjectURL(blob);
     $('storyImg').src = state.url;
-    const d = state.capturedAt;
-    state.fileName = `okena-${currentFormat().id}-${state.profile.handle}-${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}-${pad2(d.getHours())}${pad2(d.getMinutes())}.png`;
+    state.fileName = fileBase() + '.png';
     $('rendering').hidden = true;
   }
+
+  /* ---------------- vídeo: prévia em loop ---------------- */
+  let loopId = 0;
+  function startPreviewLoop() {
+    const v = $('previewVid');
+    if (v.dataset.src !== state.clip.url) {
+      v.src = state.clip.url; v.dataset.src = state.clip.url; v.muted = true; syncSound();
+      v.onended = () => { v.currentTime = 0; v.play().catch(() => {}); }; // webm sem duração não faz loop sozinho
+    }
+    v.play().catch(() => {});
+    if (loopId) return;
+    const cv = $('storyCanvas'), x = cv.getContext('2d');
+    const draw = () => {
+      if (!state.clip || !state.overlay) { loopId = 0; return; }
+      x.fillStyle = '#000'; x.fillRect(0, 0, cv.width, cv.height);
+      if (v.readyState >= 2 && v.videoWidth) drawCover(x, v, 0, 0, cv.width, cv.height);
+      else if (state.back) drawCover(x, state.back, 0, 0, cv.width, cv.height);
+      x.drawImage(state.overlay, 0, 0);
+      loopId = requestAnimationFrame(draw);
+    };
+    loopId = requestAnimationFrame(draw);
+  }
+  function stopPreviewLoop() {
+    if (loopId) cancelAnimationFrame(loopId);
+    loopId = 0;
+    const v = $('previewVid');
+    v.pause(); v.removeAttribute('src'); v.dataset.src = ''; v.load();
+    state.overlay = null;
+  }
+  function syncSound() {
+    const m = $('previewVid').muted;
+    $('soundOff').hidden = !m; $('soundOn').hidden = m;
+    $('soundBtn').setAttribute('aria-label', m ? 'Ativar som' : 'Desativar som');
+  }
+  $('soundBtn').addEventListener('click', () => { const v = $('previewVid'); v.muted = !v.muted; v.play().catch(() => {}); syncSound(); });
+
+  /* ---------------- vídeo: exportação (canvas + áudio → MediaRecorder) ---------------- */
+  let audioGraph = null, exportCancel = false;
+  function ensureAudioGraph() {
+    if (audioGraph) return audioGraph;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    const ctx = new AC();
+    const src = ctx.createMediaElementSource($('exportVid'));
+    const dest = ctx.createMediaStreamDestination();
+    src.connect(dest);
+    audioGraph = { ctx, dest };
+    return audioGraph;
+  }
+  async function exportVideo(onProgress) {
+    const clip = state.clip, overlay = state.overlay;
+    let graph = null;
+    if (clip.hasAudio) { try { graph = ensureAudioGraph(); if (graph) graph.ctx.resume(); } catch (_) { graph = null; } } // ainda dentro do toque do usuário
+    const c = document.createElement('canvas');
+    c.width = overlay.width; c.height = overlay.height;
+    const x = c.getContext('2d');
+    const v = $('exportVid');
+    if (v.dataset.src !== clip.url) { v.src = clip.url; v.dataset.src = clip.url; }
+    v.muted = !graph;
+    v.currentTime = 0;
+    await new Promise((r) => { if (v.readyState >= 2) r(); else { v.onloadeddata = () => r(); setTimeout(r, 3000); } });
+    const stream = c.captureStream(30);
+    if (graph) graph.dest.stream.getAudioTracks().forEach((t) => stream.addTrack(t));
+    const mime = pickMime();
+    const rec = new MediaRecorder(stream, mime ? { mimeType: mime, videoBitsPerSecond: 10e6 } : { videoBitsPerSecond: 10e6 });
+    const chunks = [];
+    rec.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+    const stopped = new Promise((r) => { rec.onstop = r; });
+    const draw = () => {
+      x.fillStyle = '#000'; x.fillRect(0, 0, c.width, c.height);
+      if (v.readyState >= 2 && v.videoWidth) drawCover(x, v, 0, 0, c.width, c.height);
+      x.drawImage(overlay, 0, 0);
+    };
+    draw();
+    exportCancel = false;
+    rec.start(250);
+    try { await v.play(); } catch (_) { v.muted = true; await v.play(); }
+    const t0 = performance.now();
+    await new Promise((resolve) => {
+      const tick = () => {
+        draw();
+        const el = (performance.now() - t0) / 1000;
+        onProgress(Math.min(1, el / clip.duration));
+        if (v.ended || exportCancel || el > clip.duration + 2) return resolve();
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+    v.pause();
+    rec.stop();
+    await stopped;
+    if (exportCancel) return null;
+    return new Blob(chunks, { type: rec.mimeType || mime || 'video/webm' });
+  }
+
+  /* gera o vídeo final; ao terminar, a janela mostra Compartilhar/Salvar (novo toque = permissão do navegador) */
+  async function prepareVideo() {
+    const pv = $('previewVid');
+    $('vsWorking').hidden = false; $('vsReady').hidden = true;
+    $('vsBar').style.width = '0%'; $('vsPct').textContent = '0%';
+    $('videoSheet').hidden = false;
+    pv.pause();
+    let blob = null;
+    try {
+      blob = await exportVideo((f) => { const p = Math.round(f * 100) + '%'; $('vsBar').style.width = p; $('vsPct').textContent = p; });
+    } catch (e) {
+      console.error(e);
+      toast('Não foi possível gerar o vídeo neste navegador');
+    }
+    pv.play().catch(() => {});
+    if (!blob) { $('videoSheet').hidden = true; return; }
+    const ext = extFor(blob.type);
+    state.videoOut = { blob, url: URL.createObjectURL(blob), name: state.fileName.replace(/\.\w+$/, '.' + ext) };
+    $('vsInfo').textContent = `${currentFormat().name} ${currentFormat().ratio} · ${Math.max(1, Math.round(state.clip.duration))} s · ${(blob.size / 1048576).toFixed(1)} MB · ${ext.toUpperCase()}`;
+    $('vsWorking').hidden = true; $('vsReady').hidden = false;
+  }
+  const videoFile = () => new File([state.videoOut.blob], state.videoOut.name, { type: state.videoOut.blob.type.split(';')[0] || 'video/mp4' });
+  function downloadVideo() {
+    const a = document.createElement('a');
+    a.href = state.videoOut.url; a.download = state.videoOut.name;
+    document.body.appendChild(a); a.click(); a.remove();
+    toast(isAndroid ? 'Vídeo salvo na pasta Download — aparece na Galeria' : 'Vídeo baixado');
+  }
+  async function shareVideo() {
+    const f = videoFile();
+    if (canShareFile(f)) {
+      try { await navigator.share({ files: [f] }); } catch (e) { if (e.name !== 'AbortError') { toast('Não deu para compartilhar'); saveVideo(true); } }
+    } else { toast('Compartilhamento de vídeo indisponível aqui'); saveVideo(true); }
+  }
+  async function saveVideo(skipShare) {
+    const f = videoFile();
+    if (isIOS && !skipShare && canShareFile(f)) {
+      toast('Toque em “Salvar Vídeo” para guardar nas Fotos');
+      try { await navigator.share({ files: [f] }); return; } catch (e) { if (e.name === 'AbortError') return; }
+    }
+    downloadVideo();
+    if (isIOS) toast('No iPhone o vídeo foi para Arquivos › Downloads. Abra-o e toque em Compartilhar › Salvar Vídeo');
+  }
+  $('vsShare').addEventListener('click', shareVideo);
+  $('vsSave').addEventListener('click', () => saveVideo(false));
+  $('vsClose').addEventListener('click', () => { $('videoSheet').hidden = true; });
+  $('vsCancel').addEventListener('click', () => { exportCancel = true; });
 
   /* ---------------- edição na pré-visualização ---------------- */
   let commentTimer;
@@ -1084,6 +1461,7 @@
   $('saveClose').addEventListener('click', () => { $('saveSheet').hidden = true; });
 
   async function share() {
+    if (state.clip) { if (state.videoOut) shareVideo(); else prepareVideo(); return; }
     if (!state.blob) return;
     const file = storyFile();
     if (canShareFile(file)) {
@@ -1101,6 +1479,7 @@
        se não houver, a imagem abre em tela cheia para tocar e segurar → “Adicionar às Fotos”.
      - Android e computador: download do PNG (no Android vai para a pasta Download, visível na Galeria). */
   async function saveToGallery(skipShare) {
+    if (state.clip) { if (state.videoOut) saveVideo(false); else prepareVideo(); return; }
     if (!state.blob) return;
     if (isIOS) {
       const file = storyFile();
@@ -1125,7 +1504,7 @@
   ['aboutSheet', 'installSheet'].forEach((id) => $(id).querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => closeSheet(id))));
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { closeSheet('aboutSheet'); closeSheet('installSheet'); }
-    if ((e.key === ' ' || e.key === 'Enter') && state.screen === 'camera' && !$('shutter').hidden) { e.preventDefault(); captureBack(); }
+    if ((e.key === ' ' || e.key === 'Enter') && state.screen === 'camera' && !$('shutter').hidden) { e.preventDefault(); onShutter(); }
   });
   $('aboutBtn').addEventListener('click', () => openSheet('aboutSheet'));
 
@@ -1161,7 +1540,7 @@
 
   /* ---------------- ciclo de vida ---------------- */
   $('startBtn').addEventListener('click', startFlow);
-  $('shutter').addEventListener('click', captureBack);
+  $('shutter').addEventListener('click', onShutter);
   $('cancelFlow').addEventListener('click', cancelFlow);
   $('errRetry').addEventListener('click', startFlow);
   $('errBack').addEventListener('click', () => show(state.profile ? 'home' : 'setup'));
@@ -1170,21 +1549,37 @@
   });
   window.addEventListener('pagehide', stopStream);
 
+  /* Atualização automática: basta fechar e abrir o app.
+     O HTML e os arquivos do app vêm sempre da rede (cache só para uso offline), o service worker é
+     verificado a cada abertura/retorno ao app e, quando uma versão nova assume, a tela recarrega sozinha
+     (se o usuário não estiver no meio de uma captura ou edição). */
   if ('serviceWorker' in navigator && location.protocol === 'https:') {
-    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then((reg) => {
+        const check = () => reg.update().catch(() => {});
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
+        window.addEventListener('pageshow', check);
+      }).catch(() => {});
+    });
+    let hadController = !!navigator.serviceWorker.controller, reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadController) { hadController = true; return; } // primeira instalação: nada a recarregar
+      if (reloaded) return;
+      if (['home', 'setup', 'error'].includes(state.screen)) { reloaded = true; location.reload(); }
+    });
   }
 
   // início
   $('appVersion').textContent = VERSION;
   const prefs = readJSON(KEY_PREFS);
-  if (prefs && typeof prefs === 'object') state.prefs = { date: prefs.date !== false, time: prefs.time !== false, align: ['justify', 'left', 'center', 'right'].includes(prefs.align) ? prefs.align : 'justify', font: FONTS.some((f) => f.id === prefs.font) ? prefs.font : 'padrao', format: prefs.format === 'feed' ? 'feed' : 'story' };
+  if (prefs && typeof prefs === 'object') state.prefs = { date: prefs.date !== false, time: prefs.time !== false, align: ['justify', 'left', 'center', 'right'].includes(prefs.align) ? prefs.align : 'justify', font: FONTS.some((f) => f.id === prefs.font) ? prefs.font : 'padrao', format: prefs.format === 'feed' ? 'feed' : 'story', mode: prefs.mode === 'video' ? 'video' : 'photo' };
   buildFontPicker();
   syncChips();
   state.profile = loadProfile();
   if (state.profile) { renderProfile(); show('home'); } else openSetup(false);
 
   // ganchos para testes/prints (modo demonstração)
-  if (DEMO) window.__okena = { state, startFlow, captureBack, render, show, openSheet, openSetup, demoScene, selectTab };
+  if (DEMO) window.__okena = { state, startFlow, captureBack, onShutter, setMode, render, show, openSheet, openSetup, demoScene, selectTab };
 })();
 </script>
 </body>

@@ -1,5 +1,5 @@
 /* OKENA — service worker: funciona offline após a primeira visita. */
-const CACHE = 'okena-v1.2.0';
+const CACHE = 'okena-v1.3.0';
 const CORE = [
   './', './index.html', './manifest.webmanifest',
   './assets/logo.svg', './assets/logo-mark.svg', './assets/logo-wordmark.svg', './assets/favicon.svg',
@@ -22,17 +22,20 @@ self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  // HTML: rede primeiro (sempre a versão mais nova), cache como reserva offline
-  if (req.mode === 'navigate') {
+  // App (HTML, manifest, ícones): SEMPRE da rede, ignorando o cache HTTP — fechar e abrir já traz a versão nova.
+  // O cache só é usado quando não há internet.
+  if (req.mode === 'navigate' || url.origin === location.origin) {
+    const key = req.mode === 'navigate' ? './index.html' : req;
     e.respondWith(
-      fetch(req).then((res) => { const copy = res.clone(); caches.open(CACHE).then((c) => c.put('./index.html', copy)); return res; })
-        .catch(() => caches.match('./index.html'))
+      fetch(req.mode === 'navigate' ? req.url : req, { cache: 'no-store' })
+        .then((res) => { if (res && res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(key, copy)); } return res; })
+        .catch(() => caches.match(key).then((hit) => hit || caches.match('./index.html')))
     );
     return;
   }
-  // Demais arquivos (inclui Tailwind e Google Fonts): cache primeiro, atualiza em segundo plano
+  // Bibliotecas externas (Tailwind e Google Fonts): cache primeiro, atualiza em segundo plano
   const CDN = ['cdn.tailwindcss.com', 'fonts.googleapis.com', 'fonts.gstatic.com'];
-  if (url.origin === location.origin || CDN.includes(url.hostname)) {
+  if (CDN.includes(url.hostname)) {
     e.respondWith(
       caches.match(req).then((hit) => {
         const net = fetch(req).then((res) => {

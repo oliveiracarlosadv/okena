@@ -24,7 +24,10 @@
 
 **OKENA** (do tupi *okena*, “janela”) é um gerador de Stories de câmera dupla que roda inteiro no navegador.
 Você fotografa a vista com a câmera traseira; a OKENA vira para a câmera frontal e, depois de uma contagem de
-5 segundos, dispara a selfie sozinha. Na hora de postar você escolhe o formato:
+5 segundos, dispara a selfie sozinha. Também dá para gravar **vídeos de até 30 segundos** (com som): a vista em vídeo e a selfie por cima, gerando um
+**MP4** pronto para postar.
+
+Na hora de postar você escolhe o formato:
 
 - **Story** — 1080 × 1920 (9:16);
 - **Feed** — 1080 × 1350 (4:5), sempre em **retrato**, o maior formato vertical aceito no feed do Instagram.
@@ -73,6 +76,10 @@ Canvas API.
 |:-:|:-:|:-:|:-:|
 | <img src="docs/screenshots/09-fontes.png" width="190"> | <img src="docs/screenshots/10-salvar-galeria.png" width="190"> | <img src="docs/screenshots/01-cadastro.png" width="190"> | <img src="docs/screenshots/06-configuracoes.png" width="190"> |
 
+| Modo Vídeo | Gravando (até 30 s) | Prévia do vídeo | Vídeo pronto |
+|:-:|:-:|:-:|:-:|
+| <img src="docs/screenshots/12-modo-video.png" width="190"> | <img src="docs/screenshots/13-gravando.png" width="190"> | <img src="docs/screenshots/14-video-previa.png" width="190"> | <img src="docs/screenshots/16-video-pronto.png" width="190"> |
+
 | Feed 4:5 | Sobre | Instalar no dispositivo |
 |:-:|:-:|:-:|
 | <img src="docs/screenshots/11-feed.png" width="190"> | <img src="docs/screenshots/07-sobre.png" width="190"> | <img src="docs/screenshots/08-instalar.png" width="190"> |
@@ -81,7 +88,8 @@ Canvas API.
 
 1. Abra **https://oliveiracarlosadv.github.io/okena/** no celular.
 2. Preencha nome completo e nome de usuário (a foto de perfil é opcional).
-3. Toque em **Abrir a janela**, permita a câmera e capture a vista.
+3. Toque em **Abrir a janela**, permita a câmera, escolha **Foto** ou **Vídeo** e capture a vista
+   (no vídeo: toque para gravar e de novo para parar; para sozinho em 30 s).
 4. Sorria: a selfie dispara sozinha depois de 5… 4… 3… 2… 1…
 5. Escolha **Story** ou **Feed**, escreva um comentário e o seu MOOD, escolha a fonte e o alinhamento, ligue ou desligue **Data** e **Hora**.
 6. Toque em **Compartilhar** (Instagram, WhatsApp…) ou **Salvar foto** (vai para a galeria/Fotos).
@@ -91,7 +99,8 @@ O passo a passo completo, com dicas e solução de problemas, está no **[Manual
 ## Instalar como app (PWA)
 
 A OKENA é um Progressive Web App: dá para instalar na tela inicial e ela abre em tela cheia, como um app nativo,
-e funciona offline depois da primeira visita.
+e funciona offline depois da primeira visita. **Para atualizar, basta fechar e abrir o app**: a versão nova é
+carregada sozinha.
 
 - **iPhone/iPad:** Safari → botão **Compartilhar** → **Adicionar à Tela de Início**.
 - **Android:** Chrome → menu **⋮** → **Instalar app**.
@@ -106,6 +115,7 @@ O próprio app tem um botão **Instalar no dispositivo** com esse guia.
 | Interface | HTML5 + [Tailwind CSS](https://tailwindcss.com) (CDN) |
 | Lógica | JavaScript puro, sem frameworks nem build |
 | Câmera | `navigator.mediaDevices.getUserMedia` (`environment` → `user`) |
+| Vídeo | `MediaRecorder` (MP4/H.264 quando o navegador suporta, senão WebM) + `canvas.captureStream` + Web Audio |
 | Composição | Canvas 2D, PNG — Story 1080 × 1920 ou Feed 1080 × 1350 |
 | Exportação | Web Share API (`navigator.share` com arquivo) com fallback para download |
 | Dados | `localStorage` (perfil e preferências) |

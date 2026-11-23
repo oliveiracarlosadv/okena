@@ -1,6 +1,6 @@
 # Documentação técnica — OKENA
 
-Versão 1.2.0 · Single-Page Application em um único `index.html`, sem build e sem dependências além do Tailwind via CDN.
+Versão 1.3.0 · Single-Page Application em um único `index.html`, sem build e sem dependências além do Tailwind via CDN.
 
 ---
 
@@ -167,6 +167,44 @@ fonte do sistema. A escolha fica em `prefs.font`.
 - **Compartilhar** sem suporte a arquivos recorre ao mesmo `saveToGallery`.
 - Nome: `okena-{handle}-{AAAAMMDD}-{HHMM}.png`.
 - Re-renderização com *debounce* de 250 ms ao digitar; `renderSeq` descarta renders obsoletos.
+
+## 4.1 Vídeo (até 30 s)
+
+**Captura.** No modo Vídeo o stream traseiro é aberto com `audio: true` (sem permissão de microfone, cai para
+só vídeo). `MediaRecorder` grava o stream direto, com o primeiro tipo suportado de
+`video/mp4;codecs=avc1.42E01E,mp4a.40.2 → video/mp4;codecs=avc1 → video/mp4 → video/webm;codecs=vp9,opus → …`,
+8 Mbps, `timeslice` 250 ms. Um intervalo de 100 ms atualiza o cronômetro e o anel (SVG `stroke-dashoffset`)
+e para em 30 s. A duração é medida pelo relógio (`performance.now()`), porque WebM gravado no Chrome não traz
+duração. Depois vem a selfie normal (`goFront`).
+
+**Camada fixa.** `composeOverlay()` desenha, num canvas transparente, tudo o que não é o fundo (vinhetas,
+selfie, ícone, @, comentário, MOOD, carimbo). A foto usa `compose(overlay)` = fundo + camada; o vídeo sobrepõe a
+mesma camada a cada quadro. Editar texto, fonte ou formato só refaz a camada.
+
+**Prévia.** `<video id="previewVid">` mudo em loop + `requestAnimationFrame` desenhando `drawCover(vídeo)` +
+camada no `<canvas id="storyCanvas">`. O loop de WebM sem duração é refeito no evento `ended`.
+
+**Exportação.** Toque em Salvar/Compartilhar → `prepareVideo()`:
+1. `AudioContext` criado/retomado ainda dentro do toque (`createMediaElementSource(exportVid)` →
+   `MediaStreamDestination`);
+2. `canvas.captureStream(30)` + a faixa de áudio → `MediaRecorder` (10 Mbps);
+3. reprodução do clipe em tempo real, desenhando quadro + camada até `ended`;
+4. o blob final fica em `state.videoOut` (invalidado a cada nova renderização).
+
+Como a geração leva o tempo do vídeo, o navegador perde a "ativação do usuário" exigida por `navigator.share`.
+Por isso o resultado aparece numa janela (**Vídeo pronto!**) com novos botões Compartilhar/Salvar. Nome:
+`okena-{story|feed}-{handle}-{AAAAMMDD}-{HHMM}.mp4`.
+
+## 4.2 Atualização automática
+
+- `sw.js` busca **HTML e arquivos do próprio app sempre da rede** (`cache: 'no-store'`). O cache só serve
+  offline. Tailwind e Google Fonts continuam cache-first.
+- O service worker é registrado com `updateViaCache: 'none'` e `reg.update()` roda a cada `pageshow` e retorno
+  ao app (`visibilitychange`).
+- `skipWaiting()` + `clients.claim()`: a versão nova assume na hora; no evento `controllerchange` a página
+  recarrega se o usuário estiver no início, no cadastro ou numa tela de erro (nunca no meio de captura/edição).
+
+Resultado: **fechar e abrir o app** já traz a versão publicada.
 
 ## 5. Foto de perfil
 
