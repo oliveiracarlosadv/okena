@@ -7,7 +7,9 @@
 
 ### A vista e a sua selfie, no mesmo instante.
 
-**[▶︎ Abrir a OKENA](https://oliveiracarlosadv.github.io/okena/)** · [Manual de uso](docs/MANUAL-DE-USO.md) · [Documentação técnica](docs/DOCUMENTACAO-TECNICA.md) · [Privacidade](docs/PRIVACIDADE.md)
+<a href="https://oliveiracarlosadv.github.io/okena/"><img src="assets/botao-acesse.svg" alt="Acesse o OKENA aqui" width="560"></a>
+
+[Manual de uso](docs/MANUAL-DE-USO.md) · [Documentação técnica](docs/DOCUMENTACAO-TECNICA.md) · [Privacidade](docs/PRIVACIDADE.md)
 
 ![PWA](https://img.shields.io/badge/PWA-instal%C3%A1vel-FFC94D?style=flat-square)
 ![Privacidade](https://img.shields.io/badge/processamento-100%25%20no%20navegador-0B0B0C?style=flat-square)
@@ -30,6 +32,7 @@ o WhatsApp ou a galeria, com:
 - o seu **@** logo abaixo da selfie;
 - um **comentário de até 100 caracteres**, com fonte que se ajusta ao tamanho do texto e alinhamento
   **justificado, à esquerda, centralizado ou à direita**;
+- **10 fontes** para o comentário e o MOOD (Padrão, Elegante, Clássica, Máquina, Mono, Caneta, Pacifico, Pôster, Marcador e Retrô);
 - o seu **MOOD** (como você está se sentindo, até 40 caracteres) no canto inferior esquerdo;
 - **data e/ou hora** no estilo do carimbo das câmeras de filme (display de LED laranja);
 - o ícone da OKENA como marca d'água discreta.
@@ -38,6 +41,10 @@ o WhatsApp ou a galeria, com:
   <img src="docs/screenshots/story-exemplo.png" width="260" alt="Story de exemplo: comentário justificado, data e hora">
   &nbsp;&nbsp;
   <img src="docs/screenshots/story-centralizado-so-hora.png" width="260" alt="Story de exemplo: comentário centralizado, só a hora">
+</div>
+
+<div align="center">
+  <img src="docs/screenshots/fontes.png" width="760" alt="As 10 fontes da OKENA">
 </div>
 
 ## Objetivo
@@ -53,9 +60,13 @@ Canvas API.
 |:-:|:-:|:-:|:-:|
 | <img src="docs/screenshots/02-inicio.png" width="190"> | <img src="docs/screenshots/03-camera-vista.png" width="190"> | <img src="docs/screenshots/04-contagem-selfie.png" width="190"> | <img src="docs/screenshots/05-previa.png" width="190"> |
 
-| Cadastro | Configurações | Sobre | Instalar no dispositivo |
+| Fontes | Salvar na galeria | Cadastro | Configurações |
 |:-:|:-:|:-:|:-:|
-| <img src="docs/screenshots/01-cadastro.png" width="190"> | <img src="docs/screenshots/06-configuracoes.png" width="190"> | <img src="docs/screenshots/07-sobre.png" width="190"> | <img src="docs/screenshots/08-instalar.png" width="190"> |
+| <img src="docs/screenshots/09-fontes.png" width="190"> | <img src="docs/screenshots/10-salvar-galeria.png" width="190"> | <img src="docs/screenshots/01-cadastro.png" width="190"> | <img src="docs/screenshots/06-configuracoes.png" width="190"> |
+
+| Sobre | Instalar no dispositivo |
+|:-:|:-:|
+| <img src="docs/screenshots/07-sobre.png" width="190"> | <img src="docs/screenshots/08-instalar.png" width="190"> |
 
 ## Como usar (resumo)
 
@@ -63,8 +74,8 @@ Canvas API.
 2. Preencha nome completo e nome de usuário (a foto de perfil é opcional).
 3. Toque em **Abrir a janela**, permita a câmera e capture a vista.
 4. Sorria: a selfie dispara sozinha depois de 5… 4… 3… 2… 1…
-5. Escreva um comentário e o seu MOOD, escolha o alinhamento, ligue ou desligue **Data** e **Hora**.
-6. Toque em **Compartilhar** (Instagram, WhatsApp, Fotos…) ou **Baixar**.
+5. Escreva um comentário e o seu MOOD, escolha a fonte e o alinhamento, ligue ou desligue **Data** e **Hora**.
+6. Toque em **Compartilhar** (Instagram, WhatsApp…) ou **Salvar foto** (vai para a galeria/Fotos).
 
 O passo a passo completo, com dicas e solução de problemas, está no **[Manual de uso](docs/MANUAL-DE-USO.md)**.
 

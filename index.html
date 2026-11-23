@@ -51,6 +51,9 @@
   }
   </script>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@700&family=DM+Serif+Display&family=Pacifico&family=Permanent+Marker&family=Playfair+Display:wght@700&family=Righteous&family=Space+Mono:wght@700&family=Special+Elite&display=swap">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root { --amber: #FFC94D; --ink: #0B0B0C; }
@@ -255,6 +258,8 @@
         <input id="mood" type="text" maxlength="40" placeholder="Ex.: grato, cansado, em paz ☕" enterkeyhint="done"
           class="mt-2 w-full rounded-2xl bg-black/40 border border-neutral-800 px-3.5 py-3 text-base outline-none focus:border-amber-300 placeholder:text-neutral-600">
         <p class="mt-1.5 text-xs text-neutral-500">Aparece no canto inferior esquerdo, no lugar de “Janela do Mundo Real”.</p>
+        <p class="mt-4 text-sm text-neutral-400">Fonte do comentário e do MOOD:</p>
+        <div id="fontPicker" class="mt-2 -mx-1 px-1 pb-1 flex gap-2 overflow-x-auto snap-x" role="group" aria-label="Fontes"></div>
         <div class="mt-4 flex items-center gap-2">
           <span class="text-sm text-neutral-400 mr-1 shrink-0">Alinhamento:</span>
           <div class="grid grid-cols-4 gap-1.5 flex-1">
@@ -279,7 +284,7 @@
         <div class="grid grid-cols-2 gap-3">
           <button id="downloadBtn" class="rounded-2xl bg-neutral-900 border border-neutral-800 font-medium py-3.5 flex items-center justify-center gap-2">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
-            Baixar
+            Salvar foto
           </button>
           <button id="againBtn" class="rounded-2xl bg-neutral-900 border border-neutral-800 font-medium py-3.5 flex items-center justify-center gap-2">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.6M4 4v4.6h4.6"/></svg>
@@ -289,6 +294,14 @@
       </div>
     </main>
   </section>
+
+  <!-- ============ SALVAR NA GALERIA (alternativa: tocar e segurar) ============ -->
+  <div id="saveSheet" class="fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center px-6 pt-safe pb-safe" hidden>
+    <p class="text-center text-lg font-semibold">Toque e segure a imagem</p>
+    <p class="mt-1 text-center text-sm text-neutral-400">e escolha <strong class="text-white">“Adicionar às Fotos”</strong> (iPhone) ou <strong class="text-white">“Baixar imagem”</strong> (Android).</p>
+    <img id="saveImg" alt="Story para salvar" class="mt-5 max-h-[68dvh] w-auto max-w-full rounded-2xl border border-neutral-800" style="-webkit-touch-callout: default; user-select: auto;">
+    <button id="saveClose" class="mt-6 w-full max-w-sm rounded-2xl bg-white text-black font-semibold py-3.5">Pronto</button>
+  </div>
 
   <!-- ============ ERRO ============ -->
   <section data-screen="error" class="flex-col px-6 pt-safe pb-safe">
@@ -381,19 +394,43 @@
     </div>
   </div>
 
-  <div id="toast" class="fixed left-1/2 bottom-8 z-50 rounded-full bg-white text-black text-sm font-medium px-5 py-2.5 shadow-xl"></div>
+  <div id="toast" class="fixed left-1/2 top-6 z-[60] w-max max-w-[90vw] text-center rounded-2xl bg-white text-black text-sm font-medium px-5 py-2.5 shadow-xl"></div>
 
 <script>
 (() => {
   'use strict';
 
-  const VERSION = '1.0.0';
+  const VERSION = '1.1.0';
   const KEY_PROFILE = 'okena:perfil';
   const KEY_PREFS = 'okena:prefs';
   const W = 1080, H = 1920, M = 64;           // canvas do Story e margem
   const SAFE_TOP = 150;                       // área livre do cabeçalho do Instagram
   const FONT = '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif';
   const AMBER = '#FFC94D';
+
+  /* 10 fontes para o comentário e o MOOD (Google Fonts, carregadas sob demanda) */
+  const FONTS = [
+    { id: 'padrao',    name: 'Padrão',   family: FONT,                          weight: 600, scale: 1,    lh: 1.28 },
+    { id: 'playfair',  name: 'Elegante', family: '"Playfair Display", serif',   weight: 700, scale: 1,    lh: 1.3 },
+    { id: 'dmserif',   name: 'Clássica', family: '"DM Serif Display", serif',   weight: 400, scale: 1.04, lh: 1.25 },
+    { id: 'elite',     name: 'Máquina',  family: '"Special Elite", monospace',  weight: 400, scale: 1,    lh: 1.32 },
+    { id: 'mono',      name: 'Mono',     family: '"Space Mono", monospace',     weight: 700, scale: 0.9,  lh: 1.32 },
+    { id: 'caveat',    name: 'Caneta',   family: '"Caveat", cursive',           weight: 700, scale: 1.32, lh: 1.1 },
+    { id: 'pacifico',  name: 'Pacifico', family: '"Pacifico", cursive',         weight: 400, scale: 0.92, lh: 1.55 },
+    { id: 'bebas',     name: 'Pôster',   family: '"Bebas Neue", sans-serif',    weight: 400, scale: 1.28, lh: 1.06 },
+    { id: 'marker',    name: 'Marcador', family: '"Permanent Marker", cursive', weight: 400, scale: 0.96, lh: 1.35 },
+    { id: 'righteous', name: 'Retrô',    family: '"Righteous", sans-serif',     weight: 400, scale: 1,    lh: 1.28 },
+  ];
+  const fontCSS = (f, px) => `${f.weight} ${Math.round(px)}px ${f.family}`;
+  const currentFont = () => FONTS.find((f) => f.id === state.prefs.font) || FONTS[0];
+  const loadedFonts = new Set(['padrao']);
+  async function ensureFont(f) {
+    if (loadedFonts.has(f.id) || !document.fonts) return;
+    try {
+      await Promise.race([document.fonts.load(fontCSS(f, 48), 'Aa çãéô 0123'), sleep(4000)]);
+      if (document.fonts.check(fontCSS(f, 48), 'Aa')) loadedFonts.add(f.id);
+    } catch (_) { /* sem internet: cai na fonte do sistema */ }
+  }
   const DEMO = location.hash === '#demo';     // modo demonstração (sem câmera) para prints e testes
 
   const $ = (id) => document.getElementById(id);
@@ -401,7 +438,7 @@
   const vibrate = (p) => { try { navigator.vibrate && navigator.vibrate(p); } catch (_) {} };
 
   const state = {
-    screen: null, profile: null, prefs: { date: true, time: true, align: 'justify' },
+    screen: null, profile: null, prefs: { date: true, time: true, align: 'justify', font: 'padrao' },
     stream: null, flow: 0, step: 0,
     back: null, front: null, capturedAt: null,
     blob: null, url: null, fileName: 'okena.png',
@@ -803,12 +840,13 @@
     if (cur.length) lines.push(cur);
     return lines;
   }
-  function layoutComment(x, text, maxW, maxH) {
+  function layoutComment(x, text, maxW, maxH, f) {
     let best = null;
-    for (let size = 62; size >= 34; size -= 2) {
-      x.font = `600 ${size}px ${FONT}`;
+    for (let base = 62; base >= 34; base -= 2) {
+      const size = Math.round(base * f.scale);
+      x.font = fontCSS(f, size);
       const lines = wrapWords(x, text, maxW);
-      const lh = Math.round(size * 1.28);
+      const lh = Math.round(size * f.lh);
       best = { size, lines, lh };
       if (lines.length * lh <= maxH) return best;
     }
@@ -887,11 +925,12 @@
     let stampLeft = W - M;
     if (stamp) { stampLeft = drawRetro(x, stamp, W - M, stampBase, stampH).left; bottomLimit = stampBase - stampH - 40; }
 
-    // 5) caixa de comentário (até 100 caracteres, justificado, fonte adaptativa)
+    // 5) caixa de comentário (até 100 caracteres, alinhamento escolhido, fonte adaptativa)
+    const fontNow = currentFont();
     const text = $('comment').value.trim().replace(/\s+/g, ' ').slice(0, 100);
     if (text) {
       const bw = W - M * 2, px = 44, py = 36;
-      const L = layoutComment(x, text, bw - px * 2, 360);
+      const L = layoutComment(x, text, bw - px * 2, 360, fontNow);
       const bh = L.lines.length * L.lh + py * 2;
       const by = bottomLimit - bh;
       x.save();
@@ -899,7 +938,7 @@
       rr(x, M, by, bw, bh, 38); x.fillStyle = 'rgba(10,10,12,.48)'; x.fill();
       x.shadowBlur = 0;
       x.lineWidth = 2; x.strokeStyle = 'rgba(255,255,255,.18)'; x.stroke();
-      x.font = `600 ${L.size}px ${FONT}`;
+      x.font = fontCSS(fontNow, L.size);
       x.fillStyle = '#fff';
       drawAligned(x, L.lines, M + px, by + py, bw - px * 2, L.lh, L.size, state.prefs.align);
       x.restore();
@@ -913,7 +952,7 @@
     const moodY = stamp ? stampBase - 4 : H - 252;
     const moodMax = (stamp ? stampLeft - 40 : W - M) - M;
     if (mood) {
-      x.font = `600 36px ${FONT}`;
+      x.font = fontCSS(fontNow, Math.round(38 * fontNow.scale));
       x.fillStyle = '#fff';
       x.fillText(fit(x, mood, moodMax), M, moodY);
     } else {
@@ -931,7 +970,9 @@
     if (!state.back || !state.front || !state.profile) return;
     const seq = ++renderSeq;
     $('rendering').hidden = false;
+    await ensureFont(currentFont());
     await new Promise(requestAnimationFrame);
+    if (seq !== renderSeq) return;
     const c = compose();
     const blob = await new Promise((res, rej) => c.toBlob((b) => (b ? res(b) : rej(new Error('Falha ao gerar a imagem'))), 'image/png'));
     if (seq !== renderSeq) return;
@@ -957,6 +998,33 @@
     $('chipDate').setAttribute('aria-pressed', String(state.prefs.date));
     $('chipTime').setAttribute('aria-pressed', String(state.prefs.time));
     document.querySelectorAll('[data-align]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.align === state.prefs.align)));
+    document.querySelectorAll('[data-font]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.font === state.prefs.font)));
+  }
+  function buildFontPicker() {
+    const box = $('fontPicker');
+    box.innerHTML = '';
+    for (const f of FONTS) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.dataset.font = f.id;
+      b.className = 'chip shrink-0 snap-start flex flex-col items-center justify-center gap-0.5 rounded-2xl border border-neutral-700 w-[4.6rem] h-16';
+      b.setAttribute('aria-pressed', 'false');
+      b.setAttribute('aria-label', 'Fonte ' + f.name);
+      const aa = document.createElement('span');
+      aa.textContent = 'Aa';
+      aa.style.fontFamily = f.family; aa.style.fontWeight = f.weight; aa.style.fontSize = Math.round(22 * f.scale) + 'px'; aa.style.lineHeight = '1.1';
+      const nm = document.createElement('span');
+      nm.textContent = f.name; nm.className = 'text-[11px] opacity-80';
+      b.append(aa, nm);
+      b.addEventListener('click', () => {
+        state.prefs.font = f.id;
+        writeJSON(KEY_PREFS, state.prefs);
+        syncChips();
+        render();
+      });
+      box.appendChild(b);
+    }
+    syncChips();
   }
   document.querySelectorAll('[data-align]').forEach((b) => b.addEventListener('click', () => {
     state.prefs.align = b.dataset.align;
@@ -981,19 +1049,48 @@
     document.body.appendChild(a); a.click(); a.remove();
     toast('Imagem baixada');
   }
+  const storyFile = () => new File([state.blob], state.fileName, { type: 'image/png' });
+  const canShareFile = (f) => !!(navigator.canShare && navigator.canShare({ files: [f] }));
+  function showSaveSheet() {
+    $('saveImg').src = state.url;
+    $('saveSheet').hidden = false;
+  }
+  $('saveClose').addEventListener('click', () => { $('saveSheet').hidden = true; });
+
   async function share() {
     if (!state.blob) return;
-    const file = new File([state.blob], state.fileName, { type: 'image/png' });
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    const file = storyFile();
+    if (canShareFile(file)) {
       try { await navigator.share({ files: [file] }); }
-      catch (e) { if (e.name !== 'AbortError') { toast('Não deu para compartilhar — baixando'); download(); } }
+      catch (e) { if (e.name !== 'AbortError') { toast('Não deu para compartilhar'); saveToGallery(true); } }
     } else {
-      toast('Compartilhamento indisponível aqui — baixando');
-      download();
+      toast('Compartilhamento indisponível aqui');
+      saveToGallery(true);
     }
   }
+
+  /* Salvar na galeria:
+     - iPhone/iPad: o <a download> manda para o app Arquivos (e no app instalado não faz nada).
+       O caminho que chega às Fotos é a folha de compartilhamento → “Salvar Imagem”;
+       se não houver, a imagem abre em tela cheia para tocar e segurar → “Adicionar às Fotos”.
+     - Android e computador: download do PNG (no Android vai para a pasta Download, visível na Galeria). */
+  async function saveToGallery(skipShare) {
+    if (!state.blob) return;
+    if (isIOS) {
+      const file = storyFile();
+      if (!skipShare && canShareFile(file)) {
+        toast('Toque em “Salvar Imagem” para guardar nas Fotos');
+        try { await navigator.share({ files: [file] }); return; }
+        catch (e) { if (e.name === 'AbortError') return; }
+      }
+      showSaveSheet();
+      return;
+    }
+    download();
+    if (isAndroid) toast('Salvo na pasta Download — aparece na Galeria');
+  }
   $('shareBtn').addEventListener('click', share);
-  $('downloadBtn').addEventListener('click', download);
+  $('downloadBtn').addEventListener('click', () => saveToGallery(false));
   $('againBtn').addEventListener('click', startFlow);
 
   /* ---------------- modais: Sobre e Instalar ---------------- */
@@ -1054,7 +1151,8 @@
   // início
   $('appVersion').textContent = VERSION;
   const prefs = readJSON(KEY_PREFS);
-  if (prefs && typeof prefs === 'object') state.prefs = { date: prefs.date !== false, time: prefs.time !== false, align: ['justify', 'left', 'center', 'right'].includes(prefs.align) ? prefs.align : 'justify' };
+  if (prefs && typeof prefs === 'object') state.prefs = { date: prefs.date !== false, time: prefs.time !== false, align: ['justify', 'left', 'center', 'right'].includes(prefs.align) ? prefs.align : 'justify', font: FONTS.some((f) => f.id === prefs.font) ? prefs.font : 'padrao' };
+  buildFontPicker();
   syncChips();
   state.profile = loadProfile();
   if (state.profile) { renderProfile(); show('home'); } else openSetup(false);

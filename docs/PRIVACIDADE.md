@@ -25,7 +25,9 @@ A OKENA foi feita para que **nada saia do seu aparelho** sem a sua ação.
 
 - **GitHub Pages** hospeda os arquivos do app. Como qualquer servidor web, pode registrar dados técnicos de
   acesso (IP, navegador), conforme a política de privacidade do GitHub.
-- **Tailwind CSS (cdn.tailwindcss.com)** fornece os estilos. O navegador baixa esse arquivo sem enviar nenhum dado seu.
+- **Tailwind CSS (cdn.tailwindcss.com)** fornece os estilos e o **Google Fonts (fonts.googleapis.com / fonts.gstatic.com)**
+  fornece as fontes. O navegador baixa esses arquivos como qualquer site faz (o servidor vê o IP e o navegador),
+  mas nenhum texto, foto ou dado do seu perfil é enviado.
 - Ao **compartilhar** um Story, a imagem vai para o app que você escolher (Instagram, WhatsApp etc.), sob as
   regras desse app.
 

@@ -1,5 +1,5 @@
 /* OKENA — service worker: funciona offline após a primeira visita. */
-const CACHE = 'okena-v1.0.0';
+const CACHE = 'okena-v1.1.0';
 const CORE = [
   './', './index.html', './manifest.webmanifest',
   './assets/logo.svg', './assets/logo-mark.svg', './assets/logo-wordmark.svg', './assets/favicon.svg',
@@ -30,8 +30,9 @@ self.addEventListener('fetch', (e) => {
     );
     return;
   }
-  // Demais arquivos (inclui o Tailwind via CDN): cache primeiro, atualiza em segundo plano
-  if (url.origin === location.origin || url.hostname === 'cdn.tailwindcss.com') {
+  // Demais arquivos (inclui Tailwind e Google Fonts): cache primeiro, atualiza em segundo plano
+  const CDN = ['cdn.tailwindcss.com', 'fonts.googleapis.com', 'fonts.gstatic.com'];
+  if (url.origin === location.origin || CDN.includes(url.hostname)) {
     e.respondWith(
       caches.match(req).then((hit) => {
         const net = fetch(req).then((res) => {

@@ -109,6 +109,26 @@ longos diminuem para caber em até cerca de quatro linhas.
 Escreva como você está se sentindo (ex.: “em paz 🌅”, “cansado, mas feliz”). O MOOD aparece no canto
 inferior esquerdo do Story, **no lugar** da frase “Janela do Mundo Real”. Deixe vazio para manter a frase.
 
+**Fonte (10 opções)**
+Deslize a fileira de fontes e toque na que quiser. Ela vale para o comentário **e** para o MOOD.
+
+| Fonte | Estilo |
+|---|---|
+| Padrão | Fonte do sistema, limpa e moderna |
+| Elegante | Serifada de revista (Playfair Display) |
+| Clássica | Serifada de título (DM Serif Display) |
+| Máquina | Máquina de escrever antiga (Special Elite) |
+| Mono | Monoespaçada, estilo terminal (Space Mono) |
+| Caneta | Manuscrita (Caveat) |
+| Pacifico | Letra cursiva retrô (Pacifico) |
+| Pôster | Condensada em caixa alta (Bebas Neue) |
+| Marcador | Pincel atômico (Permanent Marker) |
+| Retrô | Arredondada anos 70 (Righteous) |
+
+<p align="center"><img src="screenshots/fontes.png" width="700" alt="As 10 fontes"></p>
+
+As fontes são baixadas da internet na primeira vez que você as usa. Sem conexão, o Story sai com a fonte Padrão.
+
 **Alinhamento**
 
 | Ícone | Opção | Resultado |
@@ -122,7 +142,7 @@ inferior esquerdo do Story, **no lugar** da frase “Janela do Mundo Real”. De
 Ligue ou desligue **Data** e **Hora**. Elas aparecem no canto inferior direito, em laranja, no estilo do
 carimbo das câmeras de filme (ex.: `23 11 '26  14:32`). Com os dois desligados, o carimbo some.
 
-A OKENA lembra o alinhamento e o carimbo que você escolheu para os próximos Stories.
+A OKENA lembra a fonte, o alinhamento e o carimbo que você escolheu para os próximos Stories.
 
 <br clear="right">
 
@@ -144,14 +164,23 @@ Os elementos ficam afastados das bordas de cima e de baixo para não ficarem esc
 
 <br clear="right">
 
-## 7. Compartilhar, baixar ou tirar outra
+## 7. Compartilhar, salvar na galeria ou tirar outra
 
 - **Compartilhar:** abre a folha de compartilhamento do sistema com o PNG. Escolha **Instagram** (Stories),
-  **WhatsApp**, **Salvar imagem** / **Fotos** etc. Se o navegador não suportar compartilhar arquivos, a OKENA
-  baixa a imagem automaticamente.
-- **Baixar:** salva `okena-usuario-AAAAMMDD-HHMM.png` (1080 × 1920).
-  No iPhone, o arquivo vai para **Arquivos › Downloads**; para mandar à galeria, use **Compartilhar › Salvar Imagem**.
+  **WhatsApp** etc.
+- **Salvar foto:** guarda o Story (`okena-usuario-AAAAMMDD-HHMM.png`, 1080 × 1920) na galeria.
+  - **iPhone/iPad:** abre a folha de compartilhamento; toque em **Salvar Imagem** e a foto vai para o app **Fotos**.
+    Se a folha não abrir, a OKENA mostra o Story em tela cheia: **toque e segure a imagem › Adicionar às Fotos**.
+  - **Android:** a imagem é salva na pasta **Download** e aparece na **Galeria** / **Google Fotos**
+    (em Google Fotos: Biblioteca › Download).
+  - **Computador:** a imagem é baixada para a pasta de downloads.
 - **Tirar outra:** recomeça pela câmera traseira.
+
+<p align="center"><img src="screenshots/10-salvar-galeria.png" width="260" alt="Salvar na galeria pelo toque longo"></p>
+
+> Por que o iPhone precisa desse passo? O Safari não deixa sites gravarem direto no app Fotos; um download
+> comum vai para o app Arquivos (e, com a OKENA instalada na tela inicial, nem acontece). O caminho que chega
+> às Fotos é **Salvar Imagem** na folha de compartilhamento, ou o toque longo na imagem.
 
 ## 8. Configurações do perfil
 
@@ -210,7 +239,9 @@ e a versão instalada.
 | **Conexão não segura** | Abra pelo endereço `https://oliveiracarlosadv.github.io/okena/`. |
 | **A câmera não respondeu** | Tente de novo; se persistir, recarregue a página. |
 | A selfie usou a câmera traseira | Alguns aparelhos/navegadores não permitem escolher a câmera; atualize o navegador ou use o Safari/Chrome. |
-| “Compartilhar” só baixou o arquivo | Seu navegador não suporta compartilhar arquivos. Abra o PNG baixado e compartilhe pela galeria. |
+| “Salvar foto” não aparece na galeria (iPhone) | Na folha que abre, toque em **Salvar Imagem** (não em “Salvar em Arquivos”). Ou use o toque longo › **Adicionar às Fotos**. |
+| “Compartilhar” não abriu a lista de apps | Seu navegador não suporta compartilhar arquivos: salve com **Salvar foto** e compartilhe pela galeria. |
+| A fonte escolhida não apareceu | As fontes precisam de internet na primeira vez. Conecte-se e toque na fonte de novo. |
 | O Instagram não aparece na lista | Atualize o Instagram e, no iPhone, role a primeira linha de apps até “Mais” para ativá-lo. |
 | Perdi meu perfil | Os dados ficam no navegador; limpar dados de navegação ou usar aba anônima apaga o perfil. É só cadastrar de novo. |
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0] — 2026-11-23
+
+- 10 fontes para o comentário e o MOOD: Padrão, Elegante, Clássica, Máquina, Mono, Caneta, Pacifico, Pôster, Marcador e Retrô.
+- “Baixar” virou **Salvar foto** e passa a chegar à galeria no iPhone (folha de compartilhamento → Salvar Imagem,
+  com alternativa de toque longo › Adicionar às Fotos). Android e computador continuam com download.
+- Avisos (toasts) no topo da tela, sem cobrir botões.
+- README com botão “Acesse o OKENA aqui”.
+
 ## [1.0.0] — 2026-11-23
 
 Primeira versão pública.

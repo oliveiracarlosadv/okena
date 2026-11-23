@@ -1,6 +1,6 @@
 # Documentação técnica — OKENA
 
-Versão 1.0.0 · Single-Page Application em um único `index.html`, sem build e sem dependências além do Tailwind via CDN.
+Versão 1.1.0 · Single-Page Application em um único `index.html`, sem build e sem dependências além do Tailwind via CDN.
 
 ---
 
@@ -33,7 +33,7 @@ Um único objeto `state` no escopo do módulo (IIFE):
 | Campo | Tipo | Uso |
 |---|---|---|
 | `profile` | `{ name, handle, photo }` | Perfil; `photo` é um data URL JPEG 320×320 ou `null` |
-| `prefs` | `{ date, time, align }` | Preferências do Story (persistidas) |
+| `prefs` | `{ date, time, align, font }` | Preferências do Story (persistidas) |
 | `stream` | `MediaStream` | Stream ativo da câmera |
 | `flow` | `number` | **Token de fluxo**: incrementa a cada início/cancelamento, invalidando operações assíncronas antigas |
 | `back`, `front` | `HTMLCanvasElement` | Quadros capturados em resolução nativa |
@@ -46,7 +46,7 @@ Um único objeto `state` no escopo do módulo (IIFE):
 | Chave | Conteúdo |
 |---|---|
 | `okena:perfil` | `{"name": "...", "handle": "...", "photo": "data:image/jpeg;base64,..."}` |
-| `okena:prefs` | `{"date": true, "time": true, "align": "justify"}` |
+| `okena:prefs` | `{"date": true, "time": true, "align": "justify", "font": "padrao"}` |
 
 Leituras e gravações ficam em `try/catch`. Se o armazenamento falhar (modo privado, cota), o app segue com os
 dados em memória e avisa o usuário.
@@ -127,10 +127,36 @@ itálico (`setTransform(1, 0, −0.1, 1, …)`) e brilho em quatro passadas:
 
 Formato: `DD MM 'AA` e `HH:MM`, separados por dois espaços. Cada parte é opcional (`prefs.date`, `prefs.time`).
 
+### Fontes
+
+Dez famílias, definidas em `FONTS` (`id`, `name`, `family`, `weight`, `scale`, `lh`). `scale` compensa fontes que
+parecem menores ou maiores no mesmo tamanho (Caneta ×1,32; Pôster ×1,28; Mono ×0,9) e `lh` ajusta a entrelinha
+(Pacifico 1,55; Pôster 1,06). As nove fontes externas vêm de um único CSS do Google Fonts com `display=swap`;
+antes de cada render, `ensureFont()` chama `document.fonts.load()` (limite de 4 s). Sem rede, o canvas usa a
+fonte do sistema. A escolha fica em `prefs.font`.
+
+| id | Nome no app | Família |
+|---|---|---|
+| `padrao` | Padrão | fonte do sistema |
+| `playfair` | Elegante | Playfair Display 700 |
+| `dmserif` | Clássica | DM Serif Display |
+| `elite` | Máquina | Special Elite |
+| `mono` | Mono | Space Mono 700 |
+| `caveat` | Caneta | Caveat 700 |
+| `pacifico` | Pacifico | Pacifico |
+| `bebas` | Pôster | Bebas Neue |
+| `marker` | Marcador | Permanent Marker |
+| `righteous` | Retrô | Righteous |
+
 ### Exportação
 
 - `canvas.toBlob(..., 'image/png')` → `File` → `navigator.canShare({ files })` → `navigator.share({ files })`.
-- Sem suporte (ou erro diferente de `AbortError`): download com `<a download>`.
+- **Salvar foto** (`saveToGallery`):
+  - iOS/iPadOS: `<a download>` grava em Arquivos (e não faz nada em PWA instalada), então o app abre a folha de
+    compartilhamento (opção “Salvar Imagem” → Fotos). Se ela não existir ou falhar, abre `#saveSheet` com a imagem
+    em tela cheia e `-webkit-touch-callout: default` para o toque longo “Adicionar às Fotos”.
+  - Android e computador: `<a download>` (no Android vai para Download, indexado pela Galeria).
+- **Compartilhar** sem suporte a arquivos recorre ao mesmo `saveToGallery`.
 - Nome: `okena-{handle}-{AAAAMMDD}-{HHMM}.png`.
 - Re-renderização com *debounce* de 250 ms ao digitar; `renderSeq` descarta renders obsoletos.
 
@@ -144,7 +170,7 @@ Formato: `DD MM 'AA` e `HH:MM`, separados por dois espaços. Cada parte é opcio
 | Arquivo | Papel |
 |---|---|
 | `manifest.webmanifest` | Nome, cores, `display: standalone`, `orientation: portrait`, ícones `any` e `maskable`, screenshots |
-| `sw.js` | Pré-cache do núcleo; **rede primeiro** para HTML (sempre a versão nova), **cache primeiro com atualização em segundo plano** para assets e Tailwind |
+| `sw.js` | Pré-cache do núcleo; **rede primeiro** para HTML (sempre a versão nova), **cache primeiro com atualização em segundo plano** para assets, Tailwind e Google Fonts |
 | `index.html` | Registra o SW apenas em `https:`; guarda `beforeinstallprompt` para o botão “Instalar agora”; detecta `display-mode: standalone` |
 
 Ao publicar uma versão nova, altere `CACHE` em `sw.js` (ex.: `okena-v1.0.1`) e `VERSION` em `index.html`.
