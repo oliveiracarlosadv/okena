@@ -103,6 +103,8 @@ Canvas API.
 
 ## Como usar (resumo)
 
+> Depois do primeiro uso, a OKENA abre direto na câmera. A tela é fixa (não arrasta, não dá zoom).
+
 1. Abra **https://oliveiracarlosadv.github.io/okena/** no celular.
 2. Preencha nome completo e nome de usuário (foto de perfil e localização são opcionais).
 3. Toque em **Abrir a janela**, permita a câmera, escolha **Foto** ou **Vídeo** e capture a vista

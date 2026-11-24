@@ -1,6 +1,6 @@
 # Documentação técnica — OKENA
 
-Versão 1.6.0 · Single-Page Application em um único `index.html`, sem build e sem dependências além do Tailwind via CDN.
+Versão 1.7.0 · Single-Page Application em um único `index.html`, sem build e sem dependências além do Tailwind via CDN.
 
 ---
 
@@ -25,6 +25,16 @@ em uma delas (o CSS exibe só a ativa). Modais (`Sobre`, `Instalar`) são painé
 | Câmera | `camera` | Vídeo ao vivo, botão de captura, contagem |
 | Pré-visualização | `preview` | Story, comentário, alinhamento, carimbo, exportação |
 | Erro | `error` | Mensagens amigáveis + tentar novamente |
+
+### Abertura e tela fixa
+
+- Sem perfil → cadastro. **Com perfil → `startFlow()` direto na câmera** (o ✕ leva ao início). Se o app vai para
+  segundo plano durante a captura, ela é cancelada e, ao voltar, a câmera reabre (`state.resumeCamera`).
+- `html, body` ficam `position: fixed; overflow: hidden; overscroll-behavior: none; touch-action: manipulation`:
+  a página nunca rola nem “quica” (sem puxar para atualizar). Cada tela ativa é `position: fixed; inset: 0` e só
+  ela rola internamente (`overscroll-behavior: contain`); a câmera usa `touch-action: none`.
+- Zoom bloqueado: `maximum-scale=1, user-scalable=no` no viewport, `preventDefault` em `gesturestart/change/end`
+  (iOS) e em `touchmove` com mais de um dedo.
 
 ## 2. Estado
 

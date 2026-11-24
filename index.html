@@ -2,7 +2,7 @@
 <html lang="pt-BR" class="bg-neutral-950">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>OKENA — Janela do Mundo Real</title>
   <meta name="description" content="OKENA é um gerador de Stories no estilo câmera dupla: foto traseira + selfie, seu @, comentário e carimbo de data retrô. Tudo processado no seu navegador, sem servidores.">
   <meta name="keywords" content="okena, stories, câmera dupla, selfie, instagram stories, pwa, privacidade, canvas, gerador de stories">
@@ -57,11 +57,18 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root { --amber: #FFC94D; --ink: #0B0B0C; }
-    html, body { background: var(--ink); overscroll-behavior: none; -webkit-tap-highlight-color: transparent; }
+    /* Tela fixa: a página nunca rola, não "puxa" para fora da área visível e não dá zoom.
+       Só o conteúdo de dentro de cada tela (ex.: a prévia) rola, contido nela. */
+    html, body { position: fixed; inset: 0; width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none;
+      touch-action: manipulation; background: var(--ink); -webkit-tap-highlight-color: transparent;
+      -webkit-text-size-adjust: 100%; -webkit-user-select: none; user-select: none; }
+    input, textarea, select { -webkit-user-select: text; user-select: text; }
     body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif; }
     [hidden] { display: none !important; }
-    [data-screen] { display: none; min-height: 100dvh; }
-    [data-screen].active { display: flex; }
+    [data-screen] { display: none; }
+    [data-screen].active { display: flex; position: fixed; inset: 0; overflow-x: hidden; overflow-y: auto;
+      overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+    [data-screen="camera"].active { overflow: hidden; touch-action: none; }
     .pt-safe { padding-top: max(env(safe-area-inset-top), 16px); }
     .pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 16px); }
     .mirror { transform: scaleX(-1); }
@@ -531,7 +538,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '1.6.1';
+  const VERSION = '1.7.0';
   const KEY_PROFILE = 'okena:perfil';
   const KEY_PREFS = 'okena:prefs';
   const W = 1080, H = 1920, M = 64;           // canvas do Story e margem
@@ -603,7 +610,8 @@
   function show(name) {
     document.querySelectorAll('[data-screen]').forEach((s) => s.classList.toggle('active', s.dataset.screen === name));
     state.screen = name;
-    window.scrollTo(0, 0);
+    const el = document.querySelector(`[data-screen="${name}"]`);
+    if (el) el.scrollTop = 0;
   }
 
   let toastTimer;
@@ -1758,8 +1766,8 @@
   $('againBtn').addEventListener('click', startFlow);
 
   /* ---------------- modais: Sobre e Instalar ---------------- */
-  function openSheet(id) { $(id).hidden = false; document.body.style.overflow = 'hidden'; }
-  function closeSheet(id) { $(id).hidden = true; document.body.style.overflow = ''; }
+  function openSheet(id) { $(id).hidden = false; }
+  function closeSheet(id) { $(id).hidden = true; }
   ['aboutSheet', 'installSheet'].forEach((id) => $(id).querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => closeSheet(id))));
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { closeSheet('aboutSheet'); closeSheet('installSheet'); }
@@ -1805,7 +1813,9 @@
   $('errRetry').addEventListener('click', startFlow);
   $('errBack').addEventListener('click', () => show(state.profile ? 'home' : 'setup'));
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden && state.screen === 'camera' && !DEMO) { cancelFlow(); toast('Captura interrompida'); }
+    if (document.hidden && state.screen === 'camera' && !DEMO) { cancelFlow(); state.resumeCamera = true; return; }
+    // voltou ao app depois de sair no meio da captura: reabre direto na câmera
+    if (!document.hidden && state.resumeCamera && state.screen === 'home' && state.profile) { state.resumeCamera = false; startFlow(); }
   });
   window.addEventListener('pagehide', stopStream);
 
@@ -1836,7 +1846,13 @@
   buildFontPicker();
   syncChips();
   state.profile = loadProfile();
-  if (state.profile) { renderProfile(); show('home'); } else openSetup(false);
+  // Depois do primeiro uso (perfil já criado) a OKENA abre direto na câmera. O ✕ leva à tela inicial.
+  if (state.profile) { renderProfile(); if (DEMO) show('home'); else startFlow(); } else openSetup(false);
+
+  // Bloqueia gestos que tiram a tela do lugar: pinça/zoom (iOS).
+  ['gesturestart', 'gesturechange', 'gestureend'].forEach((t) => document.addEventListener(t, (e) => e.preventDefault(), { passive: false }));
+  document.addEventListener('touchmove', (e) => { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
+  // duplo toque: bloqueado via CSS (touch-action: manipulation), sem atrasar os toques nos botões
 
   // ganchos para testes/prints (modo demonstração)
   if (DEMO) window.__okena = { state, startFlow, captureBack, onShutter, setMode, render, show, openSheet, openSetup, demoScene, selectTab };

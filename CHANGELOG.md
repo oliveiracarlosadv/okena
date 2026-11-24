@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.7.0] — 2026-11-24
+
+- Depois do primeiro uso, o app **abre direto na câmera** (o ✕ leva à tela inicial) e reabre na câmera ao voltar de segundo plano.
+- **Tela fixa:** sem arrastar a página para fora da área visível, sem zoom e sem “puxar para atualizar”; só o conteúdo de cada tela rola.
+
 ## [1.6.1] — 2026-11-23
 
 - Carimbo de data/hora menor (altura de 58 px → 40 px).

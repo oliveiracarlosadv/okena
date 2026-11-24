@@ -51,6 +51,13 @@ você não precisa preencher de novo.
 
 ## 3. Tela inicial
 
+> **Depois do primeiro uso, a OKENA abre direto na câmera.** Para ver a tela inicial (Sobre, Instalar,
+> Configurações), toque no **✕** no canto superior esquerdo da câmera. Se você sair do app no meio de uma
+> captura, ao voltar ele reabre na câmera.
+>
+> A tela é **fixa**: não dá para arrastar o app para fora da área visível, nem dar zoom ou “puxar para
+> atualizar”. Só o conteúdo de dentro de algumas telas (como a pré-visualização) rola.
+
 <img src="screenshots/02-inicio.png" width="260" align="right">
 
 - **⚙️ @usuario (canto superior direito):** abre as **Configurações** do perfil.
